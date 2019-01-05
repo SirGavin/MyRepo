@@ -34,6 +34,7 @@ public class MapController : MonoBehaviour {
             var localPlace = new Vector3Int(pos.x, pos.y, pos.z);
 
             if (!terrainTileMap.HasTile(localPlace)) continue;
+            terrainTileMap.SetTileFlags(localPlace, TileFlags.None);
             //Debug.Log("localPlace" + localPlace);
             var tile = new WorldTile {
                 LocalPlace = localPlace,
@@ -69,37 +70,36 @@ public class MapController : MonoBehaviour {
 
         WorldTile currentTile;
         if (tiles2.TryGetValue(cellLocation, out currentTile)) {
-            if (selectedTile == null || !currentTile.Equals(selectedTile)) {
-                if (hovoredTile != null && !hovoredTile.Equals(selectedTile)) {
-                    hovoredTile.TilemapMember.SetTileFlags(hovoredTile.LocalPlace, TileFlags.None);
-                    hovoredTile.TilemapMember.SetColor(hovoredTile.LocalPlace, Color.green);
-                }
+            if (hovoredTile != null && (selectedTile == null || !hovoredTile.Equals(selectedTile))) {
+                hovoredTile.TilemapMember.SetColor(hovoredTile.LocalPlace, Color.green);
+            }
 
+            if (selectedTile == null || !currentTile.Equals(selectedTile)) {
                 hovoredTile = currentTile;
-                hovoredTile.TilemapMember.SetTileFlags(hovoredTile.LocalPlace, TileFlags.None);
                 hovoredTile.TilemapMember.SetColor(hovoredTile.LocalPlace, hovorColor);
             }
 
             if (Input.GetMouseButtonDown(0)) {
-                if (selectedTile != null && !currentTile.Equals(selectedTile)) {
-                    selectedTile.TilemapMember.SetTileFlags(selectedTile.LocalPlace, TileFlags.None);
+                if (selectedTile != null) {
                     selectedTile.TilemapMember.SetColor(selectedTile.LocalPlace, Color.green);
                 }
-                
-                selectedTile = currentTile;
-                selectedTile.TilemapMember.SetTileFlags(selectedTile.LocalPlace, TileFlags.None);
-                selectedTile.TilemapMember.SetColor(selectedTile.LocalPlace, selectedColor);
+
+                if (currentTile.Equals(selectedTile)) {
+                    selectedTile = null;
+                } else {
+                    selectedTile = currentTile;
+                    selectedTile.TilemapMember.SetColor(selectedTile.LocalPlace, selectedColor);
+                }
             }
 
-            if (Input.GetMouseButtonDown(1) && selectedTile != null && selectedTile.army != null) {
+            if (Input.GetMouseButtonDown(1) && selectedTile != null && selectedTile.army != null && HexUtils.AreNeighbors(selectedTile.LocalPlace, currentTile.LocalPlace)) {
                 currentTile.army = selectedTile.army;
                 selectedTile.army = null;
+                selectedTile.TilemapMember.SetColor(selectedTile.LocalPlace, Color.green);
                 selectedTile = currentTile;
-                selectedTile.TilemapMember.SetTileFlags(selectedTile.LocalPlace, TileFlags.None);
                 selectedTile.TilemapMember.SetColor(selectedTile.LocalPlace, selectedColor);
             }
         } else if (hovoredTile != null) {
-            hovoredTile.TilemapMember.SetTileFlags(hovoredTile.LocalPlace, TileFlags.None);
             hovoredTile.TilemapMember.SetColor(hovoredTile.LocalPlace, Color.green);
             hovoredTile = null;
         }

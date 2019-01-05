@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public struct Hex {
@@ -92,5 +93,29 @@ public static class HexUtils {
         }
 
         return new Hex(rq, rr, rs);
+    }
+
+    private static List<Vector2Int> NeightborDirections = new List<Vector2Int> {
+        new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, -1),
+        new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(0, 1)
+    };
+
+    private static List<Vector2Int> OffsetNeightborDirections = new List<Vector2Int> {
+        new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(0, -1),
+        new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(1, 1)
+    };
+
+    public static bool AreNeighbors(Vector3Int tile1, Vector3Int tile2) {
+        int parity = tile1.y & 1;
+        List<Vector2Int> directions = parity == 0 ? NeightborDirections : OffsetNeightborDirections;
+
+        for (int i = 0; i < directions.Count; i++) {
+            Vector2Int direction = directions[i];
+            if (tile2.Equals(new Vector3Int(tile1.x + direction.x, tile1.y + direction.y, tile1.z))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
