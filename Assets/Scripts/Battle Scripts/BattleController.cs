@@ -12,6 +12,10 @@ public class BattleController : MonoBehaviour {
     public Army attacker;
     public Army defender;
 
+    public void Awake() {
+        gameObject.SetActive(false);
+    }
+
     public void Fight()
     {
         float attackerArmySize = attacker.armySize;
