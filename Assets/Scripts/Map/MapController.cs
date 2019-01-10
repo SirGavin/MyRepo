@@ -10,6 +10,7 @@ public class MapController : MonoBehaviour {
     public Tilemap highlightTileMap;
     public Tile highlightTile;
     public Tile selectTile;
+    public Tile impassableTile;
 
     public GameObject armyPrefab;
     public BattleController battleController;
@@ -43,6 +44,7 @@ public class MapController : MonoBehaviour {
                 WorldLocation = terrainTileMap.CellToWorld(localPlace),
                 TileBase = terrainTileMap.GetTile(localPlace),
                 HighlightTile = highlightTile,
+                ImpassableTile = impassableTile,
                 SelectTile = selectTile,
                 TerrainTilemap = terrainTileMap,
                 HighlightTilemap = highlightTileMap,
@@ -70,7 +72,7 @@ public class MapController : MonoBehaviour {
                 hovoredTile = null;
             }
 
-            if (Input.GetMouseButtonDown(0)) {
+            if (Input.GetMouseButtonDown(0) && currentTile.IsPassable()) {
                 if (selectedTile != null) {
                     selectedTile.Deselect();
                     selectedTile = null;
@@ -82,7 +84,7 @@ public class MapController : MonoBehaviour {
                 }
             }
 
-            if (Input.GetMouseButtonDown(1) && selectedTile != null && selectedTile.army != null && HexUtils.AreNeighbors(selectedTile.LocalPlace, currentTile.LocalPlace)) {
+            if (Input.GetMouseButtonDown(1) && selectedTile != null && selectedTile.army != null && currentTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, currentTile.LocalPlace)) {
                 if (currentTile.army == null) {
                     currentTile.army = selectedTile.army;
                     selectedTile.army = null;

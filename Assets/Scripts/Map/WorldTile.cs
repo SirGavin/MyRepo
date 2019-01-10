@@ -10,6 +10,7 @@ public class WorldTile {
     public TileBase TileBase { get; set; }
     public Tile HighlightTile { get; set; }
     public Tile SelectTile { get; set; }
+    public Tile ImpassableTile { get; set; }
 
     public Tilemap TerrainTilemap { get; set; }
     public Tilemap HighlightTilemap { get; set; }
@@ -64,5 +65,9 @@ public class WorldTile {
 
     public void Deselect() {
         HighlightTilemap.SetTile(LocalPlace, null);
+    }
+
+    public bool IsPassable() {
+        return TerrainTilemap.GetTile(LocalPlace) != ImpassableTile;
     }
 }
