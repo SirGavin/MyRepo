@@ -8,5 +8,5 @@ public class Strategy {
     public int strategyId;
     public string strategyName;
     public Sprite strategyImg;
-    public MatchUpStats[] matchUps;
+    //public MatchUpStats[] matchUps;
 }

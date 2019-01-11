@@ -12,10 +12,6 @@ public class BattleController : MonoBehaviour {
     public Army attacker;
     public Army defender;
 
-    public void Awake() {
-        gameObject.SetActive(false);
-    }
-
     public void Fight()
     {
         float attackerArmySize = attacker.armySize;
@@ -43,6 +39,11 @@ public class BattleController : MonoBehaviour {
         results.text = "Results: \n" +
             "\tAttacker: " + attackerArmySize + "\n" +
             "\tDefender: " + defenderArmySize;
+    }
+
+    public void Fight(ArmyMap attacker, ArmyMap defender) {
+        gameObject.SetActive(true);
+
     }
 
     private float GetDamage(float damageModifier, float armySize)

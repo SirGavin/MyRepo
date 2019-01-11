@@ -6,6 +6,8 @@ public class MapController : MonoBehaviour {
 
     public static MapController instance;
 
+    public GameController gameController;
+
     public Tilemap terrainTileMap;
     public Tilemap highlightTileMap;
     public Tile highlightTile;
@@ -28,6 +30,7 @@ public class MapController : MonoBehaviour {
         }
 
         GetWorldTiles();
+        gameController.GeneratePlayers();
     }
 
     private void GetWorldTiles() {
@@ -53,11 +56,6 @@ public class MapController : MonoBehaviour {
             };
             
             tiles.Add(tile.LocalPlace, tile);
-
-            if (localPlace.x == 1 && localPlace.y == 1) {
-                GameObject newArmy = Instantiate(armyPrefab, new Vector3(tile.WorldLocation.x, tile.WorldLocation.y, -9), Quaternion.identity);
-                tile.army = newArmy.GetComponent<ArmyMap>();
-            }
         }
     }
 
@@ -92,7 +90,8 @@ public class MapController : MonoBehaviour {
                     selectedTile = currentTile;
                     selectedTile.Select();
                 } else {
-                    //battleController.Fight();
+                    enabled = false;
+                    battleController.Fight(selectedTile.army, currentTile.army);
                 }
             }
 
@@ -104,5 +103,31 @@ public class MapController : MonoBehaviour {
             hovoredTile.Dehighlight();
             hovoredTile = null;
         }
+    }
+
+    public ArmyMap GetRandomArmy() {
+        ArmyMap ranArmy = null;
+
+        while (ranArmy == null) {
+            int ranX = Random.Range(terrainTileMap.cellBounds.xMin, terrainTileMap.cellBounds.xMax);
+            int ranY = Random.Range(terrainTileMap.cellBounds.yMin, terrainTileMap.cellBounds.yMax);
+
+            WorldTile currentTile;
+            if (tiles.TryGetValue(new Vector3Int(ranX, ranY, 0), out currentTile)) {
+                if (currentTile.army == null && currentTile.IsPassable()) {
+                    GameObject newArmy = Instantiate(armyPrefab, new Vector3(currentTile.WorldLocation.x, currentTile.WorldLocation.y, -9), Quaternion.identity);
+                    ranArmy = newArmy.GetComponent<ArmyMap>();
+                    currentTile.army = ranArmy;
+                }
+            }
         }
+
+        return ranArmy;
+    }
+
+    public bool TryCreateArmy(Vector3Int tilePosition, out ArmyMap newArmy) {
+
+        newArmy = null;
+        return false;
+    }
 }
