@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(Strategies))]
+/*CustomEditor(typeof(Strategies))]
 public class StrategiesEditor : EditorWithSubEditors<StrategyEditor, StrategySO>
 {
     private Strategies strategies;
@@ -69,3 +69,4 @@ public class StrategiesEditor : EditorWithSubEditors<StrategyEditor, StrategySO>
         serializedObject.ApplyModifiedProperties();
     }
 }
+*/

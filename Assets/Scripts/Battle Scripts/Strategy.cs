@@ -9,4 +9,21 @@ public class Strategy {
     public string strategyName;
     public Sprite strategyImg;
     //public MatchUpStats[] matchUps;
+
+    [Serializable]
+    public class MatchUps {
+        public MatchUpStats matchUp;
+    }
+    public MatchUps[] matchUps;
+
+    public MatchUpStats GetMatchUp(int otherId) {
+        for (int i = 0; i < matchUps.Length; i++) {
+            //if (matchUps[i].defenderStratId == otherId) {
+            //    return matchUps[i];
+            //}
+        }
+
+        Debug.LogError("Match Up not found");
+        return null;
+    }
 }

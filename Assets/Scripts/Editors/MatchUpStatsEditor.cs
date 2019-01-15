@@ -25,7 +25,7 @@ public class MatchUpStatsEditor : Editor
     
     private void OnEnable()
     {
-        matchUpStats = (MatchUpStats)target;
+        //matchUpStats = (MatchUpStats)target;
 
         attackerStratIdProp = serializedObject.FindProperty(attackerStratIdPropName);
         defenderStratIdProp = serializedObject.FindProperty(defenderStratIdPropName);
@@ -76,9 +76,10 @@ public class MatchUpStatsEditor : Editor
 
     public static MatchUpStats CreateMatchUp(StrategySO attacker, StrategySO defender)
     {
-        MatchUpStats newMatchUp = CreateInstance<MatchUpStats>();
-        newMatchUp.attackerStratId = attacker.id;
-        newMatchUp.defenderStratId = defender.id;
-        return newMatchUp;
+        /* MatchUpStats newMatchUp = CreateInstance<MatchUpStats>();
+         newMatchUp.attackerStratId = attacker.id;
+         newMatchUp.defenderStratId = defender.id;
+         return newMatchUp;*/
+        return null;
     }
 }

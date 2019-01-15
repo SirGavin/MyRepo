@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(StrategySO))]
-public class StrategyEditor : EditorWithSubEditors<MatchUpStatsEditor, MatchUpStats>
+//[CustomEditor(typeof(StrategySO))]
+/*public class StrategyEditor : EditorWithSubEditors<MatchUpStatsEditor, MatchUpStats>
 {
     //StrategySO Fields
     //public int id;
@@ -103,7 +103,7 @@ public class StrategyEditor : EditorWithSubEditors<MatchUpStatsEditor, MatchUpSt
 
     public void AddMatchUp(MatchUpStats newMatchUp)
     {
-        matchUpsProp.AddToObjectArray(newMatchUp);
+       // matchUpsProp.AddToObjectArray(newMatchUp);
     }
     
     public static StrategySO CreateStrategy(SerializedProperty existingStrategies)
@@ -115,3 +115,4 @@ public class StrategyEditor : EditorWithSubEditors<MatchUpStatsEditor, MatchUpSt
         return newStrat;
     }
 }
+*/

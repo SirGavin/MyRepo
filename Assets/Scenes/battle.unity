@@ -754,7 +754,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!81 &520042037
 AudioListener:
   m_ObjectHideFlags: 0
@@ -2295,6 +2295,9 @@ MonoBehaviour:
   combatRounds: 10
   attacker: {fileID: 1141284938}
   defender: {fileID: 193356361}
+  stratPrefab: {fileID: 0}
+  attackerStratPane: {fileID: 0}
+  defenderStratPane: {fileID: 0}
 --- !u!1 &1141284936
 GameObject:
   m_ObjectHideFlags: 0

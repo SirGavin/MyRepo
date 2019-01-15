@@ -1,16 +1,64 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BattleController : MonoBehaviour {
 
     public Text results;
 
+    public MapController mapController;
     public float baseDamage = 0.7f;
     public float damageRange = 0.15f;
     public float baseHealth = 10f;
     public int combatRounds = 10;
     public Army attacker;
     public Army defender;
+
+    public StrategyPanel attackerStratPanel;
+    public StrategyPanel defenderStratPanel;
+
+    private ArmyMap attackerMap;
+    private ArmyMap defenderMap;
+    private Strategy attackerStrat;
+    private Strategy defenderStrat;
+
+    public void FightV2() {
+        if (attackerStratPanel.GetSelected() != null && defenderStratPanel.GetSelected() != null) {
+            float attackerArmySize = attackerMap.armySize;
+            float defenderArmySize = defenderMap.armySize;
+            float attackerDamage = 0f;
+            float defenderDamage = 0f;
+
+            //MatchUpStats matchUp = attackerStratPanel.GetSelected().GetMatchUp(defenderStratPanel.GetSelected().id);
+
+            for (int i = 1; i <= combatRounds; i++) {
+                attackerDamage += GetDamage(1, attackerArmySize);//matchUp.attackerDmgModifier, attackerArmySize);
+                defenderDamage += GetDamage(1, defenderArmySize);//matchUp.defenderDmgModifier, defenderArmySize);
+
+                Debug.Log("attackerDamage1: " + attackerDamage);
+                Debug.Log("defenderDamage1: " + defenderDamage);
+
+                attackerArmySize -= GetDead(ref defenderDamage);
+                defenderArmySize -= GetDead(ref attackerDamage);
+
+                Debug.Log("attackerDamage2: " + attackerDamage);
+                Debug.Log("defenderDamage2: " + defenderDamage);
+            }
+
+            results.text = "Results: \n" +
+                "\tAttacker: " + attackerArmySize + "\n" +
+                "\tDefender: " + defenderArmySize;
+
+            float attackerPerformance = defenderArmySize / defenderMap.armySize;
+            float defenderPerformance = attackerArmySize / attackerMap.armySize;
+
+            attackerMap.UpdateArmySize((int)Mathf.Ceil(attackerArmySize));
+            defenderMap.UpdateArmySize((int)Mathf.Ceil(defenderArmySize));
+
+            gameObject.SetActive(false);
+            mapController.UpdateArmies(attackerMap, defenderMap, attackerPerformance > defenderPerformance);
+        }
+    }
 
     public void Fight()
     {
@@ -41,14 +89,26 @@ public class BattleController : MonoBehaviour {
             "\tDefender: " + defenderArmySize;
     }
 
-    public void Fight(ArmyMap attacker, ArmyMap defender) {
+    public void StartBattle(ArmyMap attacker, ArmyMap defender) {
         gameObject.SetActive(true);
 
+        attackerMap = attacker;
+        defenderMap = defender;
+
+        GenerateStrategies(attacker, attackerStratPanel);
+        GenerateStrategies(defender, defenderStratPanel);
+    }
+
+    private void GenerateStrategies(ArmyMap army, StrategyPanel stratPane) {
+        stratPane.Clear();
+        foreach (Strategy strat in army.strategies) {
+            stratPane.AddStrategy(strat);
+        }
     }
 
     private float GetDamage(float damageModifier, float armySize)
     {
-        return Random.Range(baseDamage - damageRange, baseDamage + damageRange) * damageModifier * armySize;
+        return UnityEngine.Random.Range(baseDamage - damageRange, baseDamage + damageRange) * damageModifier * armySize;
     }
 
     private int GetDead(ref float damage)
@@ -60,3 +120,4 @@ public class BattleController : MonoBehaviour {
         return dead;
     }
 }
+

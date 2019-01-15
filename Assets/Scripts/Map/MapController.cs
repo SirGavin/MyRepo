@@ -21,6 +21,7 @@ public class MapController : MonoBehaviour {
 
     private WorldTile hovoredTile;
     private WorldTile selectedTile;
+    private WorldTile attackedTile;
 
     private void Awake() {
         if (instance == null) {
@@ -91,7 +92,8 @@ public class MapController : MonoBehaviour {
                     selectedTile.Select();
                 } else {
                     enabled = false;
-                    battleController.Fight(selectedTile.army, currentTile.army);
+                    attackedTile = currentTile;
+                    battleController.StartBattle(selectedTile.army, attackedTile.army);
                 }
             }
 
@@ -103,6 +105,20 @@ public class MapController : MonoBehaviour {
             hovoredTile.Dehighlight();
             hovoredTile = null;
         }
+    }
+
+    public void UpdateArmies(ArmyMap attacker, ArmyMap defender, bool attackerWon) {
+        if (attackerWon) {
+
+        } else {
+
+        }
+
+        selectedTile.army = attacker;
+        attackedTile.army = defender;
+        attackedTile = null;
+
+        enabled = true;
     }
 
     public ArmyMap GetRandomArmy() {

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class MatchUpStats : ScriptableObject {
+public class MatchUpStats {
 
     public int attackerStratId = 1;
     public int defenderStratId = 1;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(Army))]
+/*[CustomEditor(typeof(Army))]
 public class ArmyEditor : EditorWithSubEditors<StrategyEditor, StrategySO>
 {
     private Army army;
@@ -69,3 +69,4 @@ public class ArmyEditor : EditorWithSubEditors<StrategyEditor, StrategySO>
         serializedObject.ApplyModifiedProperties();
     }
 }
+*/
