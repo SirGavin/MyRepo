@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,24 @@ public class BattleController : MonoBehaviour {
     private Strategy attackerStrat;
     private Strategy defenderStrat;
 
+    private MatchUpData matchUps;
+    private string matchDataFileName = "strategies.json";
+
+    private void Awake() {
+        LoadMatchData();
+    }
+
+    private void LoadMatchData() {
+        string filePath = Path.Combine(Application.streamingAssetsPath, matchDataFileName);
+
+        if (File.Exists(filePath)) {
+            string dataAsJson = File.ReadAllText(filePath);
+            matchUps = JsonUtility.FromJson<MatchUpData>(dataAsJson);
+        } else {
+            throw new Exception("Match up data not configured!");
+        }
+    }
+
     public void FightV2() {
         if (attackerStratPanel.GetSelected() != null && defenderStratPanel.GetSelected() != null) {
             float attackerArmySize = attackerMap.armySize;
@@ -29,11 +48,11 @@ public class BattleController : MonoBehaviour {
             float attackerDamage = 0f;
             float defenderDamage = 0f;
 
-            //MatchUpStats matchUp = attackerStratPanel.GetSelected().GetMatchUp(defenderStratPanel.GetSelected().id);
+            MatchUpStats matchUp = matchUps.GetMatchUp(attackerStratPanel.GetSelected(), defenderStratPanel.GetSelected());
 
             for (int i = 1; i <= combatRounds; i++) {
-                attackerDamage += GetDamage(1, attackerArmySize);//matchUp.attackerDmgModifier, attackerArmySize);
-                defenderDamage += GetDamage(1, defenderArmySize);//matchUp.defenderDmgModifier, defenderArmySize);
+                attackerDamage += GetDamage(matchUp.attackerDmgModifier, attackerArmySize);
+                defenderDamage += GetDamage(matchUp.defenderDmgModifier, defenderArmySize);
 
                 Debug.Log("attackerDamage1: " + attackerDamage);
                 Debug.Log("defenderDamage1: " + defenderDamage);

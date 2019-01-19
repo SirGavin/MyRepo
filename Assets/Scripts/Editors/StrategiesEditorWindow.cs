@@ -4,12 +4,8 @@ using System.IO;
 using System;
 
 public class StrategiesEditorWindow : EditorWindow {
-
-    [Serializable]
-    public class Strategies {
-        public Strategy[] strategies;
-    }
-    public Strategies strategies;
+    
+    public MatchUpData strategies;
 
     private string strategiesProjectFilePath = "/StreamingAssets/strategies.json";
 
@@ -50,23 +46,19 @@ public class StrategiesEditorWindow : EditorWindow {
         if (File.Exists(filePath))
         {
             string dataAsJson = File.ReadAllText(filePath);
-            //strategies = JsonUtility.FromJson<Strategy[]>(dataAsJson);
+            strategies = JsonUtility.FromJson<MatchUpData>(dataAsJson);
         }
         else
         {
-           // strategies = new Strategy[1];
+            strategies = new MatchUpData();
         }
     }
 
     private void SaveGameData()
     {
         try {
-            Debug.Log("strategies: " + strategies.strategies.Length);
-            Debug.Log("strategies: " + strategies.strategies[0].strategyName);
             string dataAsJson = JsonUtility.ToJson(strategies);
             string filePath = Application.dataPath + strategiesProjectFilePath;
-            Debug.Log("filePath: " + filePath);
-            Debug.Log("dataAsJson: " + dataAsJson);
             File.WriteAllText(filePath, dataAsJson);
         } catch (Exception ex) {
             Debug.Log("ex: " + ex);
