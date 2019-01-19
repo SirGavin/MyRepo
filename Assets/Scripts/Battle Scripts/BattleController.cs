@@ -68,8 +68,11 @@ public class BattleController : MonoBehaviour {
                 "\tAttacker: " + attackerArmySize + "\n" +
                 "\tDefender: " + defenderArmySize;
 
-            float attackerPerformance = defenderArmySize / defenderMap.armySize;
-            float defenderPerformance = attackerArmySize / attackerMap.armySize;
+            // % of enemy army killed
+            float attackerPerformance = 1 - defenderArmySize / defenderMap.armySize;
+            float defenderPerformance = 1 - attackerArmySize / attackerMap.armySize;
+            Debug.Log("attackerPerformance: " + attackerPerformance);
+            Debug.Log("defenderPerformance: " + defenderPerformance);
 
             attackerMap.UpdateArmySize((int)Mathf.Ceil(attackerArmySize));
             defenderMap.UpdateArmySize((int)Mathf.Ceil(defenderArmySize));

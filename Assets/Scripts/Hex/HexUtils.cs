@@ -118,4 +118,94 @@ public static class HexUtils {
 
         return false;
     }
+
+    public static Dictionary<Vector2Int, List<Vector2Int>> PushDirections = new Dictionary<Vector2Int, List<Vector2Int>>() {
+        {
+            new Vector2Int(1, 0),
+            new List<Vector2Int> {
+                new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1), new Vector2Int(-1, -1), new Vector2Int(-1, 1)
+            }
+        },
+        {
+            new Vector2Int(0, -1),
+            new List<Vector2Int> {
+                new Vector2Int(1, -1), new Vector2Int(0, -1), new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(1, 1)
+            }
+        },
+        {
+            new Vector2Int(-1, -1),
+            new List<Vector2Int> {
+                new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(1, -1), new Vector2Int(0, 1), new Vector2Int(1, 0)
+            }
+        },
+        {
+            new Vector2Int(-1, 0),
+            new List<Vector2Int> {
+                new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(-1, -1), new Vector2Int(0, 1), new Vector2Int(0, -1)
+            }
+        },
+        {
+            new Vector2Int(-1, 1),
+            new List<Vector2Int> {
+                new Vector2Int(0, 1), new Vector2Int(1, 1), new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, 1)
+            }
+        },
+        {
+            new Vector2Int(0, 1),
+            new List<Vector2Int> {
+                new Vector2Int(1, 1), new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(-1, 0)
+            }
+        },
+    };
+
+    public static Dictionary<Vector2Int, List<Vector2Int>> OffsetPushDirections = new Dictionary<Vector2Int, List<Vector2Int>>() {
+        {
+            new Vector2Int(1, 0),
+            new List<Vector2Int> {
+                new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(1, 1), new Vector2Int(0, -1), new Vector2Int(0, 1)
+            }
+        },
+        {
+            new Vector2Int(1, -1),
+            new List<Vector2Int> {
+                new Vector2Int(0, -1), new Vector2Int(1, 0), new Vector2Int(-1, -1), new Vector2Int(0, 1), new Vector2Int(-1, 0)
+            }
+        },
+        {
+            new Vector2Int(0, -1),
+            new List<Vector2Int> {
+                new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(-1, 1)
+            }
+        },
+        {
+            new Vector2Int(-1, 0),
+            new List<Vector2Int> {
+                new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1), new Vector2Int(1, 1), new Vector2Int(1, -1)
+            }
+        },
+        {
+            new Vector2Int(0, 1),
+            new List<Vector2Int> {
+                new Vector2Int(-1, 1), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(-1, -1), new Vector2Int(1, 0)
+            }
+        },
+        {
+            new Vector2Int(1, 1),
+            new List<Vector2Int> {
+                new Vector2Int(0, 1), new Vector2Int(-1, 1), new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, -1)
+            }
+        },
+    };
+
+    public static List<Vector2Int> GetPushDirections(Vector2Int from, Vector2Int to) {
+        int parity = from.y & 1;
+        Dictionary<Vector2Int, List<Vector2Int>> directions = parity == 0 ? PushDirections : OffsetPushDirections;
+
+        Vector2Int pushedDirection = to - from;
+        Debug.Log("from: " + from);
+        Debug.Log("to: " + to);
+        Debug.Log("pushedDirection: " + pushedDirection);
+        Debug.Log("directions[pushedDirection]: " + directions[pushedDirection]);
+        return directions[pushedDirection];
+    }
 }

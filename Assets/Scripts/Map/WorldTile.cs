@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 public class WorldTile {
 
     public Vector3Int LocalPlace { get; set; }
-    public Vector2 OffsetCoords { get; set; }
+    public Vector2Int OffsetCoords { get; set; }
     public Vector3 WorldLocation { get; set; }
 
     public TileBase TileBase { get; set; }

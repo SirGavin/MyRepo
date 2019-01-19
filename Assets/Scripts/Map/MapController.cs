@@ -44,7 +44,7 @@ public class MapController : MonoBehaviour {
 
             var tile = new WorldTile {
                 LocalPlace = localPlace,
-                OffsetCoords = new Vector2(localPlace.x, localPlace.y),
+                OffsetCoords = new Vector2Int(localPlace.x, localPlace.y),
                 WorldLocation = terrainTileMap.CellToWorld(localPlace),
                 TileBase = terrainTileMap.GetTile(localPlace),
                 HighlightTile = highlightTile,
@@ -108,15 +108,32 @@ public class MapController : MonoBehaviour {
     }
 
     public void UpdateArmies(ArmyMap attacker, ArmyMap defender, bool attackerWon) {
+        Debug.Log("attackerWon: " + attackerWon);
         if (attackerWon) {
+            List<Vector2Int> pushDirections = HexUtils.GetPushDirections(selectedTile.OffsetCoords, attackedTile.OffsetCoords);
 
+            foreach (Vector2Int pushDirection in pushDirections) {
+                WorldTile pushTile;
+                if (tiles.TryGetValue(new Vector3Int(attackedTile.LocalPlace.x + pushDirection.x, attackedTile.LocalPlace.y + pushDirection.y, attackedTile.LocalPlace.z), out pushTile)) {
+                    if (pushTile.IsPassable() && pushTile.army == null) {
+                        pushTile.army = defender;
+                        attackedTile.army = attacker;
+
+                        selectedTile.army = null;
+                        selectedTile.Deselect();
+                        selectedTile = attackedTile;
+                        selectedTile.Select();
+                        attackedTile = null;
+                        
+                        break;
+                    }
+                }
+            }
         } else {
-
+            selectedTile.army = attacker;
+            attackedTile.army = defender;
+            attackedTile = null;
         }
-
-        selectedTile.army = attacker;
-        attackedTile.army = defender;
-        attackedTile = null;
 
         enabled = true;
     }
