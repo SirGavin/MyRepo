@@ -14,6 +14,7 @@ public class WorldTile {
 
     public Tilemap TerrainTilemap { get; set; }
     public Tilemap HighlightTilemap { get; set; }
+    public Tilemap PlayerBorderTilemap { get; set; }
 
     public string Name { get; set; }
 
@@ -45,6 +46,10 @@ public class WorldTile {
 
     public override int GetHashCode() {
         return base.GetHashCode();
+    }
+
+    public void SetPlayerBorderTile(Tile newBorder) {
+        PlayerBorderTilemap.SetTile(LocalPlace, newBorder);
     }
 
     public void Highlight() {

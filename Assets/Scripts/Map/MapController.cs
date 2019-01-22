@@ -10,6 +10,7 @@ public class MapController : MonoBehaviour {
 
     public Tilemap terrainTileMap;
     public Tilemap highlightTileMap;
+    public Tilemap playerBorderTileMap;
     public Tile highlightTile;
     public Tile selectTile;
     public Tile impassableTile;
@@ -52,6 +53,7 @@ public class MapController : MonoBehaviour {
                 SelectTile = selectTile,
                 TerrainTilemap = terrainTileMap,
                 HighlightTilemap = highlightTileMap,
+                PlayerBorderTilemap = playerBorderTileMap,
                 Name = localPlace.x + "," + localPlace.y,
                 Cost = 1 // TODO: Change this with the proper cost from ruletile
             };

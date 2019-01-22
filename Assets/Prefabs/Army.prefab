@@ -235,6 +235,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   armySize: 50
   armySizeDisplay: {fileID: 114531071142278670}
+  backgroundPanel: {fileID: 114259416275656690}
+  playerBorderTile: {fileID: 11400000, guid: e6c0ed7f12438d647bee2bcc9fffe685, type: 2}
+  strategies: []
 --- !u!212 &212422404924103746
 SpriteRenderer:
   m_ObjectHideFlags: 1
