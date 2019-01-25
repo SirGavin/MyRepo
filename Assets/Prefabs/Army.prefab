@@ -233,10 +233,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b926aebe308de1548b2bdc896b57168a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  armySize: 50
+  armySize: 0
   armySizeDisplay: {fileID: 114531071142278670}
   backgroundPanel: {fileID: 114259416275656690}
-  playerBorderTile: {fileID: 11400000, guid: e6c0ed7f12438d647bee2bcc9fffe685, type: 2}
   strategies: []
 --- !u!212 &212422404924103746
 SpriteRenderer:

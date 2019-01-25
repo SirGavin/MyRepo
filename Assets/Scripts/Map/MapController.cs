@@ -7,6 +7,7 @@ public class MapController : MonoBehaviour {
     public static MapController instance;
 
     public GameController gameController;
+    public ArmyTransferController transferController;
 
     public Tilemap terrainTileMap;
     public Tilemap highlightTileMap;
@@ -85,7 +86,19 @@ public class MapController : MonoBehaviour {
                 }
             }
 
-            if (Input.GetMouseButtonDown(1) && selectedTile != null && selectedTile.army != null && currentTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, currentTile.LocalPlace)) {
+            if (Input.GetMouseButtonDown(1) && Input.GetKey(KeyCode.LeftShift) && selectedTile != null && selectedTile.army != null && currentTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, currentTile.LocalPlace)) {
+                if (currentTile.army == null) {
+                    enabled = false;
+                    GameObject newArmy = Instantiate(armyPrefab, new Vector3(currentTile.WorldLocation.x, currentTile.WorldLocation.y, -9), Quaternion.identity);
+                    ArmyMap army = newArmy.GetComponent<ArmyMap>();
+                    currentTile.army = army;
+
+                    transferController.SetArmies(selectedTile.army, army);
+                } else {
+                    enabled = false;
+                    transferController.SetArmies(selectedTile.army, currentTile.army);
+                }
+            } else if (Input.GetMouseButtonDown(1) && selectedTile != null && selectedTile.army != null && currentTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, currentTile.LocalPlace)) {
                 if (currentTile.army == null) {
                     currentTile.army = selectedTile.army;
                     selectedTile.army = null;
@@ -110,7 +123,6 @@ public class MapController : MonoBehaviour {
     }
 
     public void UpdateArmies(ArmyMap attacker, ArmyMap defender, bool attackerWon) {
-        Debug.Log("attackerWon: " + attackerWon);
         if (attackerWon) {
             List<Vector2Int> pushDirections = HexUtils.GetPushDirections(selectedTile.OffsetCoords, attackedTile.OffsetCoords);
 

@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour {
     public void GeneratePlayers() {
         foreach (Player player in players) {
             ArmyMap newArmy = mapController.GetRandomArmy();
+            newArmy.UpdateArmySize(50);
             newArmy.AddStrategies(defaultStrategies);
             player.AddArmy(newArmy);
         }
