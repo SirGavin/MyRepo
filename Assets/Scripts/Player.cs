@@ -8,9 +8,13 @@ using UnityEngine.Tilemaps;
 public class Player {
 
     public Color color;
-    public Tile borderTile;
+    private Tile borderTile;
 
     private List<ArmyMap> armies { get; set; }
+
+    public void SetBorderTile(Tile tile) {
+        borderTile = tile;
+    }
 
     public void AddArmy(ArmyMap newArmy) {
         if (armies == null) armies = new List<ArmyMap>();

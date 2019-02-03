@@ -237,6 +237,7 @@ MonoBehaviour:
   armySizeDisplay: {fileID: 114531071142278670}
   backgroundPanel: {fileID: 114259416275656690}
   strategies: []
+  borderTile: {fileID: 11400000, guid: 2779880ce9b284f44aecaf16a41587c2, type: 2}
 --- !u!212 &212422404924103746
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -16,4 +16,12 @@ public class DoubleSidedSliderTextUpdater : MonoBehaviour {
         rightSliderText.text = newSliderVal.ToString("0");
         leftSliderText.text = (slider.maxValue - newSliderVal).ToString("0");
     }
+
+    public int GetLeftValue() {
+        return Mathf.RoundToInt(slider.maxValue - slider.value);
+    }
+
+    public int GetRightValue() {
+        return Mathf.RoundToInt(slider.value);
+    }
 }

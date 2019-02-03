@@ -563,12 +563,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59397b5eb4ceae448a7de3b35c031d82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  armyPrefab: {fileID: 1418061353935042, guid: f4f3b10ee45052d4599135d933c7bcc7, type: 2}
+  battleController: {fileID: 510990497}
+  transferController: {fileID: 1148877714}
   mapController: {fileID: 1747554240}
   players:
   - color: {r: 1, g: 0, b: 0, a: 1}
-    borderTile: {fileID: 11400000, guid: 1e8ab3c8865d9ef4f967efaecc4573d8, type: 2}
   - color: {r: 0, g: 0.34919024, b: 1, a: 1}
-    borderTile: {fileID: 11400000, guid: e6c0ed7f12438d647bee2bcc9fffe685, type: 2}
   defaultStrategies:
   - strategyId: 1
     strategyName: Attack the Center
@@ -590,6 +591,7 @@ MonoBehaviour:
     strategyName: Defend Right Flank
     strategyImg: {fileID: 21300000, guid: bf6547c40a2dcd4469895655386219c1, type: 3}
     matchUps: []
+  borderTile: {fileID: 11400000, guid: 2779880ce9b284f44aecaf16a41587c2, type: 2}
 --- !u!4 &220599509
 Transform:
   m_ObjectHideFlags: 0
@@ -753,14 +755,38 @@ Tilemap:
   m_Enabled: 1
   m_Tiles: {}
   m_AnimatedTiles: {}
-  m_TileAssetArray: []
-  m_TileSpriteArray: []
-  m_TileMatrixArray: []
-  m_TileColorArray: []
+  m_TileAssetArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  m_TileSpriteArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  m_TileMatrixArray:
+  - m_RefCount: 0
+    m_Data:
+      e00: 44.56603
+      e01: 8.790401e-39
+      e02: NaN
+      e03: 8.790401e-39
+      e10: 0
+      e11: 0
+      e12: NaN
+      e13: 0
+      e20: 0.00024514878
+      e21: 7.1740385e+24
+      e22: 0.00024514878
+      e23: 0.00024514878
+      e30: 0
+      e31: 4.5915e-41
+      e32: 0
+      e33: 0
+  m_TileColorArray:
+  - m_RefCount: 0
+    m_Data: {r: 3e-45, g: 3e-45, b: 3e-45, a: 3e-45}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
-  m_Size: {x: 0, y: 0, z: 1}
+  m_Size: {x: 3, y: 1, z: 1}
   m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -1010,7 +1036,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   results: {fileID: 535315633}
-  mapController: {fileID: 1747554240}
+  resolveBattle:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 220599508}
+        m_MethodName: ResolveBattle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+    m_TypeName: BattleController+BoolEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   baseDamage: 0.5
   damageRange: 0.2
   baseHealth: 10
@@ -1096,7 +1137,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 510990497}
-        m_MethodName: FightV2
+        m_MethodName: Fight
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2442,8 +2483,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93c98bc3b05b49e408dcd6a89f3892a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resolveTransfer:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 220599508}
+        m_MethodName: ResolveTransfer
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ArmyTransferController+IntIntEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   sliderUpdater: {fileID: 152411917}
-  mapController: {fileID: 1747554240}
 --- !u!1 &1197887287
 GameObject:
   m_ObjectHideFlags: 0
@@ -4175,16 +4231,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aa8895960ab20e4ea379cf920fbc4a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameController: {fileID: 220599508}
-  transferController: {fileID: 1148877714}
   terrainTileMap: {fileID: 1343220607}
   highlightTileMap: {fileID: 444383903}
   playerBorderTileMap: {fileID: 1127587490}
-  highlightTile: {fileID: 11400000, guid: 3f5b8374e2515f54d8b330d3d674dab2, type: 2}
+  highlightTile: {fileID: 11400000, guid: 5856adf1946bf3c42b6e5c5ff5084ae5, type: 2}
   selectTile: {fileID: 11400000, guid: a6113bf640526124db446cde1a9b6b35, type: 2}
   impassableTile: {fileID: 11400000, guid: d567e158c02cb6f469402a72c1e0509c, type: 2}
-  armyPrefab: {fileID: 1418061353935042, guid: f4f3b10ee45052d4599135d933c7bcc7, type: 2}
-  battleController: {fileID: 510990497}
 --- !u!4 &1747554241
 Transform:
   m_ObjectHideFlags: 0

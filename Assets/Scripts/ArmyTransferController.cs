@@ -1,29 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class ArmyTransferController : MonoBehaviour {
 
+    [Serializable]
+    public class IntIntEvent : UnityEvent<int, int> { }
+
+    public IntIntEvent resolveTransfer;
     public DoubleSidedSliderTextUpdater sliderUpdater;
-    public MapController mapController;
 
-    private ArmyMap leftArmy;
-    private ArmyMap rightArmy;
-
-    public void SetArmies(ArmyMap left, ArmyMap right) {
+    public void SetValues(int leftSize, int rightSize) {
         gameObject.SetActive(true);
 
-        leftArmy = left;
-        rightArmy = right;
-
-        sliderUpdater.SetValues(leftArmy.armySize + rightArmy.armySize, rightArmy.armySize);
+        sliderUpdater.SetValues(leftSize + rightSize, rightSize);
     }
 
     public void Transfer() {
-        leftArmy.UpdateArmySize(Mathf.RoundToInt(sliderUpdater.slider.maxValue - sliderUpdater.slider.value));
-        rightArmy.UpdateArmySize(Mathf.RoundToInt(sliderUpdater.slider.value));
+        resolveTransfer.Invoke(sliderUpdater.GetLeftValue(), sliderUpdater.GetRightValue());
+
         gameObject.SetActive(false);
-        mapController.enabled = true;
     }
 }
