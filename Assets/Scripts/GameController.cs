@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -13,16 +13,22 @@ public class GameController : MonoBehaviour {
 
     public List<Player> players;
     public List<Strategy> defaultStrategies;
+
     public Tile borderTile;
+    public Tile highlightTile;
+
+    private int currentPlayerIndex;
+    private Player currentPlayer;
 
     private void Awake() {
         mapController.ProcessWorldTiles();
         GeneratePlayers();
+        SetMapTiles();
     }
 
     private void GeneratePlayers() {
         foreach (Player player in players) {
-            player.SetBorderTile(Instantiate(borderTile));
+            player.InitTiles(borderTile, highlightTile);
 
             GameObject armyObj = Instantiate(armyPrefab);
             ArmyMap army = armyObj.GetComponent<ArmyMap>();
@@ -30,7 +36,17 @@ public class GameController : MonoBehaviour {
             army.AddStrategies(defaultStrategies);
             player.AddArmy(army);
             mapController.RandomlyPlaceArmy(army);
+
+            if (currentPlayer == null) {
+                currentPlayer = player;
+                currentPlayerIndex = 0;
+            }
         }
+    }
+
+    private void SetMapTiles() {
+        mapController.highlightTile = currentPlayer.hovorTile;
+        mapController.selectTile = currentPlayer.selectedTile;
     }
 
     private void Update() {
@@ -79,8 +95,7 @@ public class GameController : MonoBehaviour {
             GameObject armyObj = Instantiate(armyPrefab);
             occupyingArmy = armyObj.GetComponent<ArmyMap>();
             occupyingArmy.AddStrategies(defaultStrategies);
-            occupyingArmy.SetPlayerColor(selectedArmy.GetPlayerColor());
-            occupyingArmy.SetBorderTile(selectedArmy.GetPlayerBorderTile());
+            selectedArmy.player.AddArmy(occupyingArmy);
             mapController.PlaceArmy(occupyingArmy);
         }
 
@@ -88,5 +103,11 @@ public class GameController : MonoBehaviour {
         occupyingArmy.UpdateArmySize(rightSize);
 
         enabled = true;
+    }
+
+    public void EndTurn() {
+        currentPlayerIndex = currentPlayerIndex == players.Count - 1 ? 0 : ++currentPlayerIndex;
+        currentPlayer = players[currentPlayerIndex];
+        SetMapTiles();
     }
 }

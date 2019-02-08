@@ -9,18 +9,8 @@ public class ArmyMap : MonoBehaviour {
     public Text armySizeDisplay;
     public Image backgroundPanel;
     public List<Strategy> strategies;
-    //public Tile borderTile;
-
-    private Tile _borderTile;
-    public Tile borderTile {
-        get { return _borderTile; }
-        set {
-            _borderTile = Instantiate(value);
-        }
-    }
-
-    private Color playerColor;
-    private Tile playerBorderTile;
+    
+    public Player player { get; set; }
 
     private void Awake() {
         armySizeDisplay.text = armySize.ToString();
@@ -37,23 +27,12 @@ public class ArmyMap : MonoBehaviour {
 
     public void MoveToTile(WorldTile tile) {
         transform.position = new Vector3(tile.WorldLocation.x, tile.WorldLocation.y, -9);
-        playerBorderTile.color = playerColor;
-        tile.SetPlayerBorderTile(borderTile);
+        
+        tile.SetPlayerBorderTile(player.borderTile);
+        //player.AddTile();
     }
 
     public void AddStrategies(List<Strategy> newStrategies) {
         strategies.AddRange(newStrategies);
-    }
-
-    public Color GetPlayerColor() { return playerColor; }
-    public void SetPlayerColor(Color color) {
-        playerColor = color;
-        backgroundPanel.color = color;
-        //borderTile.color = playerColor;
-    }
-
-    public Tile GetPlayerBorderTile() { return playerBorderTile; }
-    public void SetBorderTile(Tile tile) {
-        playerBorderTile = tile;
     }
 }

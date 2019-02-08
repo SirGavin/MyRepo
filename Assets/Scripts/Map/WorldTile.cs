@@ -34,6 +34,8 @@ public class WorldTile {
         }
     }
 
+    private bool isSelected = false;
+
     public override bool Equals(object obj) {
         WorldTile otherTile = obj as WorldTile;
 
@@ -41,7 +43,7 @@ public class WorldTile {
             return false;
         }
 
-        return this.OffsetCoords.Equals(otherTile.OffsetCoords);
+        return OffsetCoords.Equals(otherTile.OffsetCoords);
     }
 
     public override int GetHashCode() {
@@ -52,23 +54,25 @@ public class WorldTile {
         PlayerBorderTilemap.SetTile(LocalPlace, newBorder);
     }
 
-    public void Highlight() {
-        if (HighlightTilemap.GetTile(LocalPlace) != SelectTile) {
-            HighlightTilemap.SetTile(LocalPlace, HighlightTile);
+    public void Highlight(Tile hightlightTile) {
+        if (!isSelected) {
+            HighlightTilemap.SetTile(LocalPlace, hightlightTile);
         }
     }
 
     public void Dehighlight() {
-        if (HighlightTilemap.GetTile(LocalPlace) == HighlightTile) {
+        if (!isSelected) {
             HighlightTilemap.SetTile(LocalPlace, null);
         }
     }
 
-    public void Select() {
-        HighlightTilemap.SetTile(LocalPlace, SelectTile);
-    }
+    public void Select(Tile selectedTile) {
+        isSelected = true;
+        HighlightTilemap.SetTile(LocalPlace, selectedTile);
+    } 
 
     public void Deselect() {
+        isSelected = false;
         HighlightTilemap.SetTile(LocalPlace, null);
     }
 

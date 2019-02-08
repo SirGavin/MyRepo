@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class MapController : MonoBehaviour {
-
-    public static MapController instance;
     
     public Tilemap terrainTileMap;
     public Tilemap highlightTileMap;
@@ -57,7 +55,7 @@ public class MapController : MonoBehaviour {
 
             if (currentTile.IsPassable()) {
                 hovoredTile = currentTile;
-                hovoredTile.Highlight();
+                hovoredTile.Highlight(highlightTile);
             }
         }
     }
@@ -68,7 +66,7 @@ public class MapController : MonoBehaviour {
                 //Deselect if clicking on a selected tile
                 selectedTile.Deselect();
                 selectedTile = null;
-                hovoredTile.Highlight();
+                hovoredTile.Highlight(highlightTile);
             } else {
                 //Deselect old tile
                 if (selectedTile != null) {
@@ -78,7 +76,7 @@ public class MapController : MonoBehaviour {
                     
                 //Select new tile
                 selectedTile = hovoredTile;
-                selectedTile.Select();
+                selectedTile.Select(selectTile);
             }
         }
     }
@@ -94,7 +92,7 @@ public class MapController : MonoBehaviour {
             selectedTile.army = null;
             selectedTile.Deselect();
             selectedTile = hovoredTile;
-            selectedTile.Select();
+            selectedTile.Select(selectTile);
             return true;
         }
 
@@ -120,7 +118,7 @@ public class MapController : MonoBehaviour {
                     selectedTile.army = null;
                     selectedTile.Deselect();
                     selectedTile = hovoredTile;
-                    selectedTile.Select();
+                    selectedTile.Select(selectTile);
                         
                     break;
                 }

@@ -8,20 +8,38 @@ using UnityEngine.Tilemaps;
 public class Player {
 
     public Color color;
-    private Tile borderTile;
+    public int playerNum;
 
-    private List<ArmyMap> armies { get; set; }
+    public Tile borderTile { get; set; }
+    public Tile hovorTile { get; set; }
+    public Tile selectedTile { get; set; }
 
-    public void SetBorderTile(Tile tile) {
-        borderTile = tile;
+    private List<ArmyMap> armies;
+    private List<WorldTile> ownedTiles;
+
+    public void InitTiles(Tile borderTile, Tile highlightTile) {
+        this.borderTile = UnityEngine.Object.Instantiate(borderTile);
+        this.borderTile.color = color;
+
+        hovorTile = UnityEngine.Object.Instantiate(highlightTile);
+        color.a = 0.25f;
+        hovorTile.color = color;
+
+        selectedTile = UnityEngine.Object.Instantiate(highlightTile);
+        color.a = 0.5f;
+        selectedTile.color = color;
     }
 
     public void AddArmy(ArmyMap newArmy) {
         if (armies == null) armies = new List<ArmyMap>();
 
-        newArmy.SetPlayerColor(color);
-        newArmy.SetBorderTile(borderTile);
-
+        newArmy.player = this;
         armies.Add(newArmy);
+    }
+
+    public void AddTile(WorldTile tile) {
+        if (ownedTiles == null) ownedTiles = new List<WorldTile>();
+
+        ownedTiles.Add(tile);
     }
 }
