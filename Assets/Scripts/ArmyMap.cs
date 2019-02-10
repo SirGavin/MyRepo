@@ -19,7 +19,7 @@ public class ArmyMap : MonoBehaviour {
         armySizeDisplay.text = armySize.ToString();
     }
 
-    public void UpdateArmySize(int newSize) {
+    public void SetArmySize(int newSize) {
         if (newSize <= 0) {
             Destroy(gameObject);
         }

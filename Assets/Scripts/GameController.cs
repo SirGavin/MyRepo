@@ -5,6 +5,11 @@ using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour {
 
+    private enum TurnStages {
+        ArmyPlacement,
+        Attack
+    }
+
     public GameObject armyPrefab;
 
     public BattleController battleController;
@@ -18,11 +23,14 @@ public class GameController : MonoBehaviour {
     public Tile highlightTile;
     
     private Player currentPlayer;
+    private TurnStages currentTurnStage;
+    private int reinforcementCount;
 
     private void Awake() {
         mapController.ProcessWorldTiles();
         GeneratePlayers();
         SetMapTiles();
+        StartPlacementStage();
     }
 
     private void GeneratePlayers() {
@@ -32,7 +40,7 @@ public class GameController : MonoBehaviour {
             player.InitTiles(borderTile, highlightTile);
             
             ArmyMap army = InitializeArmy();
-            army.UpdateArmySize(50);
+            army.SetArmySize(5);
             player.AddArmy(army);
             mapController.RandomlyPlaceArmy(army);
         }
@@ -50,6 +58,12 @@ public class GameController : MonoBehaviour {
         army.captureTile.AddListener(CaptureTile);
 
         return army;
+    }
+
+    private void StartPlacementStage() {
+        currentTurnStage = TurnStages.ArmyPlacement;
+
+        reinforcementCount = currentPlayer.GetReinforcementCount();
     }
 
     private void Update() {
@@ -74,8 +88,25 @@ public class GameController : MonoBehaviour {
                     battleController.StartBattle(selectedArmy, occupyingArmy);
                 }
             }
-        } else if (Input.GetMouseButtonDown(0) && currentPlayer.ControlsTile(mapController.GetCellLocation(point))) {
-            mapController.TrySelect();
+        } else if (Input.GetMouseButtonDown(0) && currentPlayer.ControlsTile(mapController.GetCurrentTile())) {
+            if (currentTurnStage == TurnStages.ArmyPlacement) {
+                WorldTile currentTile = mapController.GetCurrentTile();
+                if (currentTile.army) {
+                    currentTile.army.SetArmySize(currentTile.army.armySize + 1);
+                } else {
+                    ArmyMap army = InitializeArmy();
+                    army.SetArmySize(1);
+                    currentPlayer.AddArmy(army);
+                    mapController.PlaceArmy(army);
+                }
+
+                reinforcementCount--;
+                if (reinforcementCount == 0) {
+                    currentTurnStage = TurnStages.Attack;
+                }
+            } else if (currentTurnStage == TurnStages.Attack) {
+                mapController.TrySelect();
+            }
         } else {
             mapController.TryHover(point);
         }
@@ -109,8 +140,8 @@ public class GameController : MonoBehaviour {
             mapController.PlaceArmy(occupyingArmy);
         }
 
-        selectedArmy.UpdateArmySize(leftSize);
-        occupyingArmy.UpdateArmySize(rightSize);
+        selectedArmy.SetArmySize(leftSize);
+        occupyingArmy.SetArmySize(rightSize);
 
         enabled = true;
     }
@@ -121,5 +152,6 @@ public class GameController : MonoBehaviour {
         int nextPlayerNum = currentPlayer.playerNum == players.Count ? 1 : currentPlayer.playerNum + 1;
         currentPlayer = players.Find(player => player.playerNum == nextPlayerNum);
         SetMapTiles();
+        StartPlacementStage();
     }
 }

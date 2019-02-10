@@ -7,6 +7,8 @@ using UnityEngine.Tilemaps;
 [Serializable]
 public class Player {
 
+    private const float MinReinforcements = 3;
+
     public Color color;
     public int playerNum;
 
@@ -39,7 +41,7 @@ public class Player {
     public void AddTile(WorldTile tile) {
         if (ownedTiles == null) ownedTiles = new List<WorldTile>();
 
-        ownedTiles.Add(tile);
+        if (!ControlsTile(tile)) ownedTiles.Add(tile);
     }
 
     public void RemoveTile(WorldTile tile) {
@@ -48,9 +50,13 @@ public class Player {
         ownedTiles.Remove(tile);
     }
 
-    public bool ControlsTile(Vector3Int cellLocation) {
-        foreach (WorldTile tile in ownedTiles) {
-            if (tile.LocalPlace == cellLocation) return true;
+    public int GetReinforcementCount() {
+        return Mathf.FloorToInt(Mathf.Max(ownedTiles.Count / 2f, MinReinforcements));
+    }
+
+    public bool ControlsTile(WorldTile tile) {
+        foreach (WorldTile ownedTile in ownedTiles) {
+            if (ownedTile.Equals(tile)) return true;
         }
 
         return false;

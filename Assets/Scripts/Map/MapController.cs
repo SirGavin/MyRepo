@@ -43,8 +43,8 @@ public class MapController : MonoBehaviour {
         }
     }
 
-    public Vector3Int GetCellLocation(Vector3 mousePosition) {
-        return terrainTileMap.WorldToCell(mousePosition);
+    public WorldTile GetCurrentTile() {
+        return hovoredTile;
     }
 
     public void ClearSelection() {

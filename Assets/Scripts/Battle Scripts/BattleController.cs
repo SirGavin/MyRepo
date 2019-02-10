@@ -73,8 +73,8 @@ public class BattleController : MonoBehaviour {
             Debug.Log("attackerPerformance: " + attackerPerformance);
             Debug.Log("defenderPerformance: " + defenderPerformance);
 
-            attackerMap.UpdateArmySize((int)Mathf.Ceil(attackerArmySize));
-            defenderMap.UpdateArmySize((int)Mathf.Ceil(defenderArmySize));
+            attackerMap.SetArmySize((int)Mathf.Ceil(attackerArmySize));
+            defenderMap.SetArmySize((int)Mathf.Ceil(defenderArmySize));
 
             gameObject.SetActive(false);
             Debug.Log("attackerPerformance > defenderPerformance: " + (attackerPerformance > defenderPerformance));
