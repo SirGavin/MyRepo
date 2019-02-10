@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ArmyMap : MonoBehaviour {
+
+    [Serializable]
+    public class TileEvent : UnityEvent<WorldTile> { }
 
     public int armySize;
     public Text armySizeDisplay;
     public Image backgroundPanel;
     public List<Strategy> strategies;
-    
-    public Player player { get; set; }
+    public TileEvent captureTile;
 
     private void Awake() {
         armySizeDisplay.text = armySize.ToString();
@@ -27,9 +30,7 @@ public class ArmyMap : MonoBehaviour {
 
     public void MoveToTile(WorldTile tile) {
         transform.position = new Vector3(tile.WorldLocation.x, tile.WorldLocation.y, -9);
-        
-        tile.SetPlayerBorderTile(player.borderTile);
-        //player.AddTile();
+        captureTile.Invoke(tile);
     }
 
     public void AddStrategies(List<Strategy> newStrategies) {

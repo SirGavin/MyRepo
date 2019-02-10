@@ -32,8 +32,7 @@ public class Player {
 
     public void AddArmy(ArmyMap newArmy) {
         if (armies == null) armies = new List<ArmyMap>();
-
-        newArmy.player = this;
+        
         armies.Add(newArmy);
     }
 
@@ -41,5 +40,19 @@ public class Player {
         if (ownedTiles == null) ownedTiles = new List<WorldTile>();
 
         ownedTiles.Add(tile);
+    }
+
+    public void RemoveTile(WorldTile tile) {
+        if (ownedTiles == null) return;
+
+        ownedTiles.Remove(tile);
+    }
+
+    public bool ControlsTile(Vector3Int cellLocation) {
+        foreach (WorldTile tile in ownedTiles) {
+            if (tile.LocalPlace == cellLocation) return true;
+        }
+
+        return false;
     }
 }

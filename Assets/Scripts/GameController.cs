@@ -16,8 +16,7 @@ public class GameController : MonoBehaviour {
 
     public Tile borderTile;
     public Tile highlightTile;
-
-    private int currentPlayerIndex;
+    
     private Player currentPlayer;
 
     private void Awake() {
@@ -28,25 +27,29 @@ public class GameController : MonoBehaviour {
 
     private void GeneratePlayers() {
         foreach (Player player in players) {
-            player.InitTiles(borderTile, highlightTile);
+            currentPlayer = player;
 
-            GameObject armyObj = Instantiate(armyPrefab);
-            ArmyMap army = armyObj.GetComponent<ArmyMap>();
+            player.InitTiles(borderTile, highlightTile);
+            
+            ArmyMap army = InitializeArmy();
             army.UpdateArmySize(50);
-            army.AddStrategies(defaultStrategies);
             player.AddArmy(army);
             mapController.RandomlyPlaceArmy(army);
-
-            if (currentPlayer == null) {
-                currentPlayer = player;
-                currentPlayerIndex = 0;
-            }
         }
     }
 
     private void SetMapTiles() {
         mapController.highlightTile = currentPlayer.hovorTile;
         mapController.selectTile = currentPlayer.selectedTile;
+    }
+
+    private ArmyMap InitializeArmy() {
+        GameObject armyObj = Instantiate(armyPrefab);
+        ArmyMap army = armyObj.GetComponent<ArmyMap>();
+        army.AddStrategies(defaultStrategies);
+        army.captureTile.AddListener(CaptureTile);
+
+        return army;
     }
 
     private void Update() {
@@ -71,11 +74,20 @@ public class GameController : MonoBehaviour {
                     battleController.StartBattle(selectedArmy, occupyingArmy);
                 }
             }
-        } else if (Input.GetMouseButtonDown(0)) {
+        } else if (Input.GetMouseButtonDown(0) && currentPlayer.ControlsTile(mapController.GetCellLocation(point))) {
             mapController.TrySelect();
         } else {
             mapController.TryHover(point);
         }
+    }
+
+    public void CaptureTile(WorldTile tile) {
+        foreach (Player player in players) {
+            if (player.playerNum != currentPlayer.playerNum) player.RemoveTile(tile);
+        }
+
+        tile.SetPlayerBorderTile(currentPlayer.borderTile);
+        currentPlayer.AddTile(tile);
     }
 
     public void ResolveBattle(bool attackerWon) {
@@ -92,10 +104,8 @@ public class GameController : MonoBehaviour {
         mapController.GetArmies(out selectedArmy, out occupyingArmy);
 
         if (occupyingArmy == null) {
-            GameObject armyObj = Instantiate(armyPrefab);
-            occupyingArmy = armyObj.GetComponent<ArmyMap>();
-            occupyingArmy.AddStrategies(defaultStrategies);
-            selectedArmy.player.AddArmy(occupyingArmy);
+            occupyingArmy = InitializeArmy();
+            currentPlayer.AddArmy(occupyingArmy);
             mapController.PlaceArmy(occupyingArmy);
         }
 
@@ -106,8 +116,10 @@ public class GameController : MonoBehaviour {
     }
 
     public void EndTurn() {
-        currentPlayerIndex = currentPlayerIndex == players.Count - 1 ? 0 : ++currentPlayerIndex;
-        currentPlayer = players[currentPlayerIndex];
+        mapController.ClearSelection();
+
+        int nextPlayerNum = currentPlayer.playerNum == players.Count ? 1 : currentPlayer.playerNum + 1;
+        currentPlayer = players.Find(player => player.playerNum == nextPlayerNum);
         SetMapTiles();
     }
 }
