@@ -4,6 +4,7 @@ using System.IO;
 using System;
 
 public class StrategiesEditorWindow : EditorWindow {
+    //TODO: review strat setup process
     
     public MatchUpData strategies;
 

@@ -93,12 +93,11 @@ public class MapController : MonoBehaviour {
     }
 
     public bool CanMove() {
-        return selectedTile != null && selectedTile.army != null && hovoredTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, hovoredTile.LocalPlace);
+        return selectedTile != null && selectedTile.army != null && selectedTile.army.CanMove() && hovoredTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, hovoredTile.LocalPlace);
     }
 
     public bool TryMove() {
-        if (selectedTile != null && selectedTile.army != null &&
-                hovoredTile.army == null && hovoredTile.IsPassable() && HexUtils.AreNeighbors(selectedTile.LocalPlace, hovoredTile.LocalPlace)) {
+        if (CanMove() && hovoredTile.army == null) {
             hovoredTile.army = selectedTile.army;
             selectedTile.army = null;
             selectedTile.Deselect();
@@ -110,7 +109,7 @@ public class MapController : MonoBehaviour {
         return false;
     }
 
-    public void GetArmies(out ArmyMap selectedArmy, out ArmyMap occupyingArmy) {
+    public void GetArmies(out Army selectedArmy, out Army occupyingArmy) {
         selectedArmy = selectedTile.army;
         occupyingArmy = hovoredTile.army;
     }
@@ -137,11 +136,11 @@ public class MapController : MonoBehaviour {
         }
     }
 
-    public void PlaceArmy(ArmyMap army) {
+    public void PlaceArmy(Army army) {
         hovoredTile.army = army;
     }
 
-    public void RandomlyPlaceArmy(ArmyMap army) {
+    public void RandomlyPlaceArmy(Army army) {
         while (true) {
             int ranX = Random.Range(terrainTileMap.cellBounds.xMin, terrainTileMap.cellBounds.xMax);
             int ranY = Random.Range(terrainTileMap.cellBounds.yMin, terrainTileMap.cellBounds.yMax);
@@ -153,6 +152,31 @@ public class MapController : MonoBehaviour {
                     return;
                 }
             }
+        }
+    }
+
+    public List<WorldTile> GetNeighbors(WorldTile tile) {
+        List<Vector2Int> neighborDirections = HexUtils.GetNeighborDirections(tile.LocalPlace);
+
+        List<WorldTile> neighbors = new List<WorldTile>();
+
+        foreach (Vector2Int direction in neighborDirections) {
+            WorldTile currentTile;
+            if (tiles.TryGetValue(new Vector3Int(tile.LocalPlace.x + direction.x, tile.LocalPlace.y + direction.y, tile.LocalPlace.z), out currentTile)) {
+                neighbors.Add(currentTile);
+            }
+        }
+
+        return neighbors;
+    }
+
+    private void Update() {
+        Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        if (Input.GetMouseButtonDown(0)) {
+            TrySelect();
+        } else {
+            TryHover(point);
         }
     }
 }

@@ -9,6 +9,9 @@ public class Player {
 
     private const float MinReinforcements = 3;
 
+    private GameObject armyPrefab;
+    public List<Strategy> strategies;
+
     public Color color;
     public int playerNum;
 
@@ -16,10 +19,17 @@ public class Player {
     public Tile hovorTile { get; set; }
     public Tile selectedTile { get; set; }
 
-    private List<ArmyMap> armies;
+    protected List<Army> armies;
     private List<WorldTile> ownedTiles;
 
-    public void InitTiles(Tile borderTile, Tile highlightTile) {
+    public void Init(List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) {
+        strategies = defaultStrategies;
+        this.armyPrefab = armyPrefab;
+
+        InitTiles(borderTile, highlightTile);
+    }
+
+    private void InitTiles(Tile borderTile, Tile highlightTile) {
         this.borderTile = UnityEngine.Object.Instantiate(borderTile);
         this.borderTile.color = color;
 
@@ -32,13 +42,29 @@ public class Player {
         selectedTile.color = color;
     }
 
-    public void AddArmy(ArmyMap newArmy) {
-        if (armies == null) armies = new List<ArmyMap>();
+    public Army CreateArmy(int armySize) {
+        GameObject armyObj = GameObject.Instantiate(armyPrefab);
+        Army army = armyObj.GetComponent<Army>();
+        army.AddStrategies(strategies);
+        army.SetArmySize(armySize);
+        army.captureTile.AddListener(CaptureTile);
+        AddArmy(army);
+
+        return army;
+    }
+
+    private void CaptureTile(WorldTile tile) {
+        tile.Capture(borderTile, RemoveTile);
+        AddTile(tile);
+    }
+
+    public void AddArmy(Army newArmy) {
+        if (armies == null) armies = new List<Army>();
         
         armies.Add(newArmy);
     }
 
-    public void AddTile(WorldTile tile) {
+    virtual public void AddTile(WorldTile tile) {
         if (ownedTiles == null) ownedTiles = new List<WorldTile>();
 
         if (!ControlsTile(tile)) ownedTiles.Add(tile);
@@ -52,6 +78,12 @@ public class Player {
 
     public int GetReinforcementCount() {
         return Mathf.FloorToInt(Mathf.Max(ownedTiles.Count / 2f, MinReinforcements));
+    }
+
+    public void ResetArmies() {
+        foreach (Army army in armies) {
+            army.ResetMovement();
+        }
     }
 
     public bool ControlsTile(WorldTile tile) {

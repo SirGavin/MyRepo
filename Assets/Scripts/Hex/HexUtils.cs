@@ -95,19 +95,19 @@ public static class HexUtils {
         return new Hex(rq, rr, rs);
     }
 
-    private static List<Vector2Int> NeightborDirections = new List<Vector2Int> {
+    private static List<Vector2Int> NeighborDirections = new List<Vector2Int> {
         new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, -1),
         new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(0, 1)
     };
 
-    private static List<Vector2Int> OffsetNeightborDirections = new List<Vector2Int> {
+    private static List<Vector2Int> OffsetNeighborDirections = new List<Vector2Int> {
         new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(0, -1),
         new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(1, 1)
     };
 
     public static bool AreNeighbors(Vector3Int tile1, Vector3Int tile2) {
         int parity = tile1.y & 1;
-        List<Vector2Int> directions = parity == 0 ? NeightborDirections : OffsetNeightborDirections;
+        List<Vector2Int> directions = parity == 0 ? NeighborDirections : OffsetNeighborDirections;
 
         for (int i = 0; i < directions.Count; i++) {
             Vector2Int direction = directions[i];
@@ -117,6 +117,11 @@ public static class HexUtils {
         }
 
         return false;
+    }
+
+    public static List<Vector2Int> GetNeighborDirections(Vector3Int tile) {
+        int parity = tile.y & 1;
+        return parity == 0 ? NeighborDirections : OffsetNeighborDirections;
     }
 
     public static Dictionary<Vector2Int, List<Vector2Int>> PushDirections = new Dictionary<Vector2Int, List<Vector2Int>>() {
@@ -202,10 +207,6 @@ public static class HexUtils {
         Dictionary<Vector2Int, List<Vector2Int>> directions = parity == 0 ? PushDirections : OffsetPushDirections;
 
         Vector2Int pushedDirection = to - from;
-        Debug.Log("from: " + from);
-        Debug.Log("to: " + to);
-        Debug.Log("pushedDirection: " + pushedDirection);
-        Debug.Log("directions[pushedDirection]: " + directions[pushedDirection]);
         return directions[pushedDirection];
     }
 }
