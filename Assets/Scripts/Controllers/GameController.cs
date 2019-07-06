@@ -8,6 +8,8 @@ public class GameController : MonoBehaviour {
     public MapController mapController;
     public TurnController turnController;
 
+    public List<Color> playerColors;
+    public int playerCount = 2;
     public List<Player> humanPlayers;
     public List<AIPlayer> aiPlayers;
     public List<Strategy> defaultStrategies;
@@ -16,14 +18,48 @@ public class GameController : MonoBehaviour {
     public Tile borderTile;
     public Tile highlightTile;
 
-    private List<Player> orderedPlayers;
+    private string menuScene = "Menu";
+    private SceneController sceneController;
+    private GameSetupData gameSetupData;
+    private List<Player> orderedPlayers = new List<Player>();
     private Player currentPlayer;
 
     private void Awake() {
-        mapController.ProcessWorldTiles();
-        GenerateTurnOrder();
-        GeneratePlayers();
-        StartGame();
+        sceneController = FindObjectOfType<SceneController>();
+        gameSetupData = FindObjectOfType<GameSetupData>();
+
+        if (!gameSetupData || !gameSetupData.isGameLoaded) {
+            LoadGameData();
+            mapController.ProcessWorldTiles();
+            GeneratePlayers();
+            //GenerateTurnOrder();
+            StartGame();
+        }
+    }
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape) && sceneController) {
+            //TODO: returning from pause menu doesn't work properly
+            sceneController.FadeAndLoadScene(menuScene);
+        }
+    }
+
+    private void LoadGameData() {
+        if (gameSetupData) {
+            playerCount = gameSetupData.playerCount;
+            gameSetupData.isGameLoaded = true;
+        }
+    }
+
+    private void GeneratePlayers() {
+        for (int i = 0; i < playerCount; i++) {
+            Player player = new Player(i+1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile);
+
+            Army army = player.CreateArmy(5);
+            mapController.RandomlyPlaceArmy(army);
+
+            orderedPlayers.Add(player);
+        }
     }
 
     private void GenerateTurnOrder() {
@@ -32,17 +68,6 @@ public class GameController : MonoBehaviour {
 
         foreach (AIPlayer ai in aiPlayers) {
             orderedPlayers.Add(ai);
-        }
-    }
-
-    private void GeneratePlayers() {
-        foreach (Player player in orderedPlayers) {
-            currentPlayer = player;
-
-            player.Init(defaultStrategies, armyPrefab, borderTile, highlightTile);
-
-            Army army = player.CreateArmy(5);
-            mapController.RandomlyPlaceArmy(army);
         }
     }
 

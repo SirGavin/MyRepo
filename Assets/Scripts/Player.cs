@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -22,7 +21,18 @@ public class Player {
     protected List<Army> armies;
     private List<WorldTile> ownedTiles;
 
-    public void Init(List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) {
+    public Player() {}
+    public Player(int playerNum, Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) {
+        this.playerNum = playerNum;
+        this.color = color;
+        strategies = defaultStrategies;
+        this.armyPrefab = armyPrefab;
+
+        InitTiles(borderTile, highlightTile);
+    }
+
+    public void Init(Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) {
+        this.color = color;
         strategies = defaultStrategies;
         this.armyPrefab = armyPrefab;
 
