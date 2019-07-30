@@ -107,7 +107,7 @@ public class MapController : MonoBehaviour {
         }
 
         return false;
-    }
+    } 
 
     public void GetArmies(out Army selectedArmy, out Army occupyingArmy) {
         selectedArmy = selectedTile.army;
@@ -178,5 +178,13 @@ public class MapController : MonoBehaviour {
         } else {
             TryHover(point);
         }
+    }
+
+    //Used for AI turns
+    public void SetHovoredTile(WorldTile tile) {
+        hovoredTile = tile;
+    }
+    public void SetSelectedTile(WorldTile tile) {
+        selectedTile = tile;
     }
 }

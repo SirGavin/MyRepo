@@ -10,8 +10,7 @@ public class GameController : MonoBehaviour {
 
     public List<Color> playerColors;
     public int playerCount = 2;
-    public List<Player> humanPlayers;
-    public List<AIPlayer> aiPlayers;
+    public int aiPlayerCount = 0;
     public List<Strategy> defaultStrategies;
 
     public GameObject armyPrefab;
@@ -32,7 +31,6 @@ public class GameController : MonoBehaviour {
             LoadGameData();
             mapController.ProcessWorldTiles();
             GeneratePlayers();
-            //GenerateTurnOrder();
             StartGame();
         }
     }
@@ -54,20 +52,17 @@ public class GameController : MonoBehaviour {
     private void GeneratePlayers() {
         for (int i = 0; i < playerCount; i++) {
             Player player = new Player(i+1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile);
-
             Army army = player.CreateArmy(5);
             mapController.RandomlyPlaceArmy(army);
 
             orderedPlayers.Add(player);
         }
-    }
+        for (int i = playerCount; i < playerCount + aiPlayerCount; i++) {
+            Player player = new AIPlayer(i + 1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile);
+            Army army = player.CreateArmy(5);
+            mapController.RandomlyPlaceArmy(army);
 
-    private void GenerateTurnOrder() {
-        orderedPlayers = new List<Player>();
-        orderedPlayers.AddRange(humanPlayers);
-
-        foreach (AIPlayer ai in aiPlayers) {
-            orderedPlayers.Add(ai);
+            orderedPlayers.Add(player);
         }
     }
 
@@ -90,10 +85,10 @@ public class GameController : MonoBehaviour {
         currentPlayer = orderedPlayers.Find(player => player.playerNum == nextPlayerNum);
         SetMapTiles();
 
-        if (currentPlayer is AIPlayer) {
-            aiController.DoAITurn(currentPlayer as AIPlayer);
-        } else {
+        //if (currentPlayer is AIPlayer) {
+        //    aiController.DoAITurn(currentPlayer as AIPlayer);
+        //} else {
             turnController.StartTurn(currentPlayer);
-        }
+        //}
     }
 }

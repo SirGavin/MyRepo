@@ -19,7 +19,7 @@ public class Player {
     public Tile selectedTile { get; set; }
 
     protected List<Army> armies;
-    private List<WorldTile> ownedTiles;
+    protected List<WorldTile> ownedTiles;
 
     public Player() {}
     public Player(int playerNum, Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) {
@@ -84,6 +84,10 @@ public class Player {
         if (ownedTiles == null) return;
 
         ownedTiles.Remove(tile);
+    }
+
+    public List<WorldTile> GetTiles() {
+        return ownedTiles;
     }
 
     public int GetReinforcementCount() {

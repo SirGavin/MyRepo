@@ -1,10 +1,20 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [Serializable]
 public class AIPlayer : Player {
+
+    public AIPlayer() { }
+    public AIPlayer(int playerNum, Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) :
+        base(playerNum, color, defaultStrategies, armyPrefab, borderTile, highlightTile) {
+    }
+
+    public WorldTile GetRandomOwnedTile() {
+        int ranIndex = UnityEngine.Random.Range(0, ownedTiles.Count);
+        return ownedTiles[ranIndex];
+    }
 
     //TODO: rewrite this, it's shit
 
@@ -42,7 +52,7 @@ public class AIPlayer : Player {
     public override void AddTile(WorldTile tile) {
         base.AddTile(tile);
 
-        heatMap.Add(tile.LocalPlace, new HeatMapValue(tile, Priority.High, CalculateTileStrength(tile)));
+        //heatMap.Add(tile.LocalPlace, new HeatMapValue(tile, Priority.High, CalculateTileStrength(tile)));
     }
 
     public void UpdateTileAndNeighbors(WorldTile tile) {

@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class ReinforcePhaseController : PhaseController {
+public class AIReinforcePhaseController : PhaseController {
 
     public Text reinforceCounter;
 
@@ -12,19 +13,20 @@ public class ReinforcePhaseController : PhaseController {
 
         this.player = player;
         reinforcementCount = player.GetReinforcementCount();
-        
+
         reinforceCounter.color = player.color;
         UpdateReinforceText();
+        StartCoroutine(Reinforce());
     }
-	
-	void Update () {
-        if (Input.GetMouseButtonDown(0) && player.ControlsTile(mapController.GetCurrentTile())) {
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
-                PlaceReinforcements(mapController.GetCurrentTile(), reinforcementCount);
-            } else {
-                PlaceReinforcements(mapController.GetCurrentTile(), 1);
-            }
+
+    private IEnumerator Reinforce() {
+        while (reinforcementCount > 0) {
+            WorldTile tile = ((AIPlayer)player).GetRandomOwnedTile();
+            PlaceReinforcements(tile, 1);
+            yield return new WaitForSeconds(1);
         }
+
+        EndPhase();
     }
 
     public void PlaceReinforcements(WorldTile tile, int reinforceAmount) {
@@ -34,12 +36,9 @@ public class ReinforcePhaseController : PhaseController {
             Army army = player.CreateArmy(reinforceAmount);
             tile.army = army;
         }
-        
+
         reinforcementCount -= reinforceAmount;
         UpdateReinforceText();
-        if (reinforcementCount == 0) {
-            EndPhase();
-        }
     }
 
     private void UpdateReinforceText() {
