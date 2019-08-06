@@ -51,14 +51,14 @@ public class GameController : MonoBehaviour {
 
     private void GeneratePlayers() {
         for (int i = 0; i < playerCount; i++) {
-            Player player = new Player(i+1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile);
+            Player player = new Player(i+1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile, RemovePlayerFromGame);
             Army army = player.CreateArmy(5);
             mapController.RandomlyPlaceArmy(army);
 
             orderedPlayers.Add(player);
         }
         for (int i = playerCount; i < playerCount + aiPlayerCount; i++) {
-            Player player = new AIPlayer(i + 1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile);
+            Player player = new AIPlayer(i + 1, playerColors[i], defaultStrategies, armyPrefab, borderTile, highlightTile, RemovePlayerFromGame);
             Army army = player.CreateArmy(5);
             mapController.RandomlyPlaceArmy(army);
 
@@ -66,10 +66,15 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    private void RemovePlayerFromGame(Player player) {
+        orderedPlayers.Remove(player);
+    }
+
     private void StartGame() {
         currentPlayer = orderedPlayers.Find(player => player.playerNum == 1);
 
         SetMapTiles();
+        mapController.SetCurrentPlayer(currentPlayer);
         turnController.StartTurn(currentPlayer);
     }
 
@@ -88,7 +93,16 @@ public class GameController : MonoBehaviour {
         //if (currentPlayer is AIPlayer) {
         //    aiController.DoAITurn(currentPlayer as AIPlayer);
         //} else {
-            turnController.StartTurn(currentPlayer);
+        mapController.SetCurrentPlayer(currentPlayer);
+        turnController.StartTurn(currentPlayer);
         //}
+    }
+
+    public Player GetArmiesPlayer(Army army) {
+        foreach (Player player in orderedPlayers) {
+            if (player.ControlsArmy(army)) return player;
+        }
+
+        return null;
     }
 }

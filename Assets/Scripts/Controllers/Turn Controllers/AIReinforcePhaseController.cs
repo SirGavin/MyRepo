@@ -23,7 +23,7 @@ public class AIReinforcePhaseController : PhaseController {
         while (reinforcementCount > 0) {
             WorldTile tile = ((AIPlayer)player).GetRandomOwnedTile();
             PlaceReinforcements(tile, 1);
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.2f);
         }
 
         EndPhase();

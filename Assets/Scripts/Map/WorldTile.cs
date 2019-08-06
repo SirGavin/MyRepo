@@ -42,6 +42,7 @@ public class WorldTile {
     public void Capture(Tile newBorder, UnityAction<WorldTile> capturedCallback) {
         PlayerBorderTilemap.SetTile(LocalPlace, newBorder);
 
+        tileCaptured.Invoke(this);
         tileCaptured.RemoveAllListeners();
         tileCaptured.AddListener(capturedCallback);
     }

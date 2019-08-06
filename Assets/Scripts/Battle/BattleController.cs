@@ -10,17 +10,18 @@ public class BattleController : MonoBehaviour {
     [Serializable]
     public class BoolEvent : UnityEvent<bool> { }
 
-    public Text results;
-    public StrategyPanel attackerStratPanel;
-    public StrategyPanel defenderStratPanel;
+    public GameObject armyPanePrefab;
+    public VerticalLayoutGroup layoutGroup;
 
     public float baseDamage = 0.7f;
     public float damageRange = 0.15f;
     public float baseHealth = 10f;
     public int combatRounds = 10;
 
-    private Army attackerMap;
-    private Army defenderMap;
+    private Army attacker;
+    private Army defender;
+    private Strategy attackerStrat;
+    private Strategy defenderStrat;
     private BoolEvent resolveBattle = new BoolEvent();
 
     private MatchUpData matchUps;
@@ -41,14 +42,47 @@ public class BattleController : MonoBehaviour {
         }
     }
 
+    public void StartBattle(Player attackingPlayer, Army attacker, Player defendingPlayer, Army defender, UnityAction<Boolean> resolveBattle) {
+        gameObject.SetActive(true);
+        this.resolveBattle.AddListener(resolveBattle);
+
+        this.attacker = attacker;
+        this.defender = defender;
+
+        //Remove old strategy panels
+        for (int i = 0; i < transform.childCount - 1; i++) {
+            Destroy(transform.GetChild(i).gameObject);
+        }
+
+        if (defendingPlayer is AIPlayer) {
+            defenderStrat = ((AIPlayer)defendingPlayer).GetRandomStrategy();
+        } else {
+            GenerateStrategiesUI(defender, delegate (Strategy strategy) {
+                defenderStrat = strategy;
+            });
+        }
+
+        if (attackingPlayer is AIPlayer) {
+            attackerStrat = ((AIPlayer)attackingPlayer).GetRandomStrategy();
+        } else {
+            GenerateStrategiesUI(attacker, delegate (Strategy strategy) {
+                attackerStrat = strategy;
+            });
+        }
+
+        if (attackerStrat != null && defenderStrat != null) {
+            Fight();
+        }
+    }
+
     public void Fight() {
-        if (attackerStratPanel.GetSelected() != null && defenderStratPanel.GetSelected() != null) {
-            float attackerArmySize = attackerMap.armySize;
-            float defenderArmySize = defenderMap.armySize;
+        if (attackerStrat != null && defenderStrat != null) {
+            float attackerArmySize = attacker.armySize;
+            float defenderArmySize = defender.armySize;
             float attackerDamage = 0f;
             float defenderDamage = 0f;
 
-            MatchUpStats matchUp = matchUps.GetMatchUp(attackerStratPanel.GetSelected(), defenderStratPanel.GetSelected());
+            MatchUpStats matchUp = matchUps.GetMatchUp(attackerStrat, defenderStrat);
 
             for (int i = 1; i <= combatRounds; i++) {
                 attackerDamage += GetDamage(matchUp.attackerDmgModifier, attackerArmySize);
@@ -64,43 +98,34 @@ public class BattleController : MonoBehaviour {
                 Debug.Log("defenderDamage2: " + defenderDamage);
             }
 
-            results.text = "Results: \n" +
-                "\tAttacker: " + attackerArmySize + "\n" +
-                "\tDefender: " + defenderArmySize;
-
             // % of enemy army killed
-            float attackerPerformance = 1 - defenderArmySize / defenderMap.armySize;
-            float defenderPerformance = 1 - attackerArmySize / attackerMap.armySize;
+            float attackerPerformance = 1 - defenderArmySize / defender.armySize;
+            float defenderPerformance = 1 - attackerArmySize / attacker.armySize;
             Debug.Log("attackerPerformance: " + attackerPerformance);
             Debug.Log("defenderPerformance: " + defenderPerformance);
 
-            attackerMap.SetArmySize((int)Mathf.Ceil(attackerArmySize));
-            defenderMap.SetArmySize((int)Mathf.Ceil(defenderArmySize));
+            attacker.SetArmySize((int)Mathf.Ceil(attackerArmySize));
+            defender.SetArmySize((int)Mathf.Ceil(defenderArmySize));
 
             gameObject.SetActive(false);
             Debug.Log("attackerPerformance > defenderPerformance: " + (attackerPerformance > defenderPerformance));
 
             resolveBattle.Invoke(attackerPerformance > defenderPerformance);
-            this.resolveBattle.RemoveAllListeners();
+            resolveBattle.RemoveAllListeners();
         }
     }
 
-    public void StartBattle(Army attacker, Army defender, UnityAction<Boolean> resolveBattle) {
-        gameObject.SetActive(true);
-        this.resolveBattle.AddListener(resolveBattle);
+    private void GenerateStrategiesUI(Army army, UnityAction<Strategy> setStrat) {
+        GameObject armyObj = Instantiate(armyPanePrefab);
+        armyObj.transform.SetParent(layoutGroup.transform);
+        armyObj.transform.SetAsFirstSibling();
 
-        attackerMap = attacker;
-        defenderMap = defender;
-
-        GenerateStrategiesUI(attacker, attackerStratPanel);
-        GenerateStrategiesUI(defender, defenderStratPanel);
+        StrategyPanel stratPane = armyObj.GetComponentInChildren<StrategyPanel>();
+        stratPane.GenerateUI(army, setStrat);
     }
 
-    private void GenerateStrategiesUI(Army army, StrategyPanel stratPane) {
-        stratPane.Clear();
-        foreach (Strategy strat in army.strategies) {
-            stratPane.AddStrategy(strat);
-        }
+    private void SetStrategy(ref Strategy stratToSet, Strategy strat) {
+        stratToSet = strat;
     }
 
     private float GetDamage(float damageModifier, float armySize)

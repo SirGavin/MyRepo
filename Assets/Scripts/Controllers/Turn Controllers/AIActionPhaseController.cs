@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AIActionPhaseController : PhaseController {
 
+    public GameController gameController;
     public BattleController battleController;
     public ArmyTransferController transferController;
 
@@ -18,10 +20,12 @@ public class AIActionPhaseController : PhaseController {
         player.ResetArmies();
         //Put player tiles in a new list so we don't destroy the original
         playerTiles = new List<WorldTile>(this.player.GetTiles());
-        CheckNextTile();
+        //CheckNextTile();
+        StartCoroutine(CheckNextTile());
     }
 
-    private void CheckNextTile() {
+    private IEnumerator CheckNextTile() {
+        yield return new WaitForSeconds(0.2f);
         if (playerTiles.Count > 0) {
             WorldTile playerTile = playerTiles[0];
             playerTiles.RemoveAt(0);
@@ -49,13 +53,13 @@ public class AIActionPhaseController : PhaseController {
                 if (tileToMoveTo != null) {
                     mapController.SetHovoredTile(tileToMoveTo);
                     if (!mapController.TryMove()) {
-                        battleController.StartBattle(army, tileToMoveTo.army, ResolveBattle);
-                        return;
+                        battleController.StartBattle(player, army, gameController.GetArmiesPlayer(tileToMoveTo.army), tileToMoveTo.army, ResolveBattle);
+                        yield break;
                     }
                 }
             }
 
-            CheckNextTile();
+            StartCoroutine(CheckNextTile());
         } else {
             mapController.enabled = true;
             EndPhase();
@@ -67,6 +71,6 @@ public class AIActionPhaseController : PhaseController {
             mapController.Push();
         }
 
-        CheckNextTile();
+        StartCoroutine(CheckNextTile());
     }
 }

@@ -16,6 +16,11 @@ public class MapController : MonoBehaviour {
     private WorldTile hovoredTile;
     private WorldTile selectedTile;
 
+    private Player currentPlayer;
+    public void SetCurrentPlayer(Player cPlayer) {
+        currentPlayer = cPlayer;
+    }
+
     public void ProcessWorldTiles() {
         tiles = new Dictionary<Vector3Int, WorldTile>();
         foreach (Vector3Int pos in terrainTileMap.cellBounds.allPositionsWithin) {
@@ -72,7 +77,7 @@ public class MapController : MonoBehaviour {
     }
 
     public void TrySelect() {
-        if (hovoredTile != null && hovoredTile.IsPassable()) {
+        if (hovoredTile != null && hovoredTile.IsPassable() && currentPlayer.ControlsTile(hovoredTile)) {
             if (hovoredTile.Equals(selectedTile)) {
                 //Deselect if clicking on a selected tile
                 selectedTile.Deselect();
@@ -115,6 +120,7 @@ public class MapController : MonoBehaviour {
     }
 
     //This makes the selected army "push" the losing army post-battle
+    //TODO: can push onto an empty enemy tile
     public void Push() {
         List<Vector2Int> pushDirections = HexUtils.GetPushDirections(selectedTile.OffsetCoords, hovoredTile.OffsetCoords);
 

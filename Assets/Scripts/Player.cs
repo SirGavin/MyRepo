@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 [Serializable]
 public class Player {
 
-    private const float MinReinforcements = 3;
+    [Serializable]
+    public class PlayerEvent : UnityEvent<Player> { }
 
-    private GameObject armyPrefab;
     public List<Strategy> strategies;
-
     public Color color;
     public int playerNum;
 
@@ -21,12 +21,17 @@ public class Player {
     protected List<Army> armies;
     protected List<WorldTile> ownedTiles;
 
+    private const float MinReinforcements = 3;
+    private GameObject armyPrefab;
+    private PlayerEvent playerLost = new PlayerEvent();
+
     public Player() {}
-    public Player(int playerNum, Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile) {
+    public Player(int playerNum, Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile, UnityAction<Player> playerLostCallback) {
         this.playerNum = playerNum;
         this.color = color;
         strategies = defaultStrategies;
         this.armyPrefab = armyPrefab;
+        playerLost.AddListener(playerLostCallback);
 
         InitTiles(borderTile, highlightTile);
     }
@@ -84,6 +89,11 @@ public class Player {
         if (ownedTiles == null) return;
 
         ownedTiles.Remove(tile);
+
+        if (ownedTiles.Count == 0) {
+            playerLost.Invoke(this);
+            playerLost.RemoveAllListeners();
+        }
     }
 
     public List<WorldTile> GetTiles() {
@@ -103,6 +113,14 @@ public class Player {
     public bool ControlsTile(WorldTile tile) {
         foreach (WorldTile ownedTile in ownedTiles) {
             if (ownedTile.Equals(tile)) return true;
+        }
+
+        return false;
+    }
+
+    public bool ControlsArmy(Army army) {
+        foreach (Army ownedArmy in armies) {
+            if (ownedArmy == army) return true;
         }
 
         return false;

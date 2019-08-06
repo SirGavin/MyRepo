@@ -2,6 +2,7 @@
 
 public class ActionPhaseController : PhaseController {
 
+    public GameController gameController;
     public BattleController battleController;
     public ArmyTransferController transferController;
 
@@ -31,7 +32,7 @@ public class ActionPhaseController : PhaseController {
                 if (selectedArmy != null && occupyingArmy != null) {
                     enabled = false;
                     mapController.enabled = false;
-                    battleController.StartBattle(selectedArmy, occupyingArmy, ResolveBattle);
+                    battleController.StartBattle(player, selectedArmy, gameController.GetArmiesPlayer(occupyingArmy), occupyingArmy, ResolveBattle);
                 }
             }
         }

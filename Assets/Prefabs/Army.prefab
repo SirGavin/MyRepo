@@ -233,6 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b926aebe308de1548b2bdc896b57168a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultMovement: 10
   armySize: 0
   armySizeDisplay: {fileID: 114531071142278670}
   backgroundPanel: {fileID: 114259416275656690}
@@ -240,7 +241,7 @@ MonoBehaviour:
   captureTile:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: ArmyMap+TileEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+    m_TypeName: Army+TileEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
 --- !u!212 &212422404924103746
 SpriteRenderer:
