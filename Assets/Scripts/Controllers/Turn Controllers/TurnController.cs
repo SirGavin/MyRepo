@@ -23,6 +23,7 @@ public class TurnController : MonoBehaviour {
             phases = phaseControllers;
         }
 
+        player.ResetArmies();
         NextPhase();
     }
 

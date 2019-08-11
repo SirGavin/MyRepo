@@ -7,19 +7,25 @@ using UnityEngine.Tilemaps;
 [Serializable]
 public class AIPlayer : Player {
 
+    private List<WorldTile> borderTiles;
+
     public AIPlayer() { }
     public AIPlayer(int playerNum, Color color, List<Strategy> defaultStrategies, GameObject armyPrefab, Tile borderTile, Tile highlightTile, UnityAction<Player> playerLostCallback) :
         base(playerNum, color, defaultStrategies, armyPrefab, borderTile, highlightTile, playerLostCallback) {
     }
 
-    public WorldTile GetRandomOwnedTile() {
-        int ranIndex = UnityEngine.Random.Range(0, ownedTiles.Count);
-        return ownedTiles[ranIndex];
+    public WorldTile GetRandomBorderTile() {
+        int ranIndex = UnityEngine.Random.Range(0, borderTiles.Count);
+        return borderTiles[ranIndex];
     }
 
     public Strategy GetRandomStrategy() {
         int ranIndex = UnityEngine.Random.Range(0, strategies.Count);
         return strategies[ranIndex];
+    }
+
+    public override void ResetArmies() {
+        base.ResetArmies();
     }
 
     //TODO: rewrite this, it's shit

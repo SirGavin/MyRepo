@@ -10,7 +10,6 @@ public class ActionPhaseController : PhaseController {
         gameObject.SetActive(true);
 
         this.player = player;
-        player.ResetArmies();
     }
 
     void Update () {

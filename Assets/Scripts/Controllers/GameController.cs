@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -79,14 +80,18 @@ public class GameController : MonoBehaviour {
     }
 
     private void SetMapTiles() {
-        mapController.highlightTile = currentPlayer.hovorTile;
-        mapController.selectTile = currentPlayer.selectedTile;
+            mapController.highlightTile = currentPlayer.hovorTile;
+            mapController.selectTile = currentPlayer.selectedTile;
     }
 
     public void EndTurn() {
         mapController.ClearSelection();
-
+        
         int nextPlayerNum = currentPlayer.playerNum == orderedPlayers.Count ? 1 : currentPlayer.playerNum + 1;
+        while (!orderedPlayers.Exists(player => player.playerNum == nextPlayerNum)) {
+            nextPlayerNum = nextPlayerNum == orderedPlayers.Count ? 1 : nextPlayerNum + 1;
+        }
+
         currentPlayer = orderedPlayers.Find(player => player.playerNum == nextPlayerNum);
         SetMapTiles();
 

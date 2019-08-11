@@ -104,7 +104,7 @@ public class Player {
         return Mathf.FloorToInt(Mathf.Max(ownedTiles.Count / 2f, MinReinforcements));
     }
 
-    public void ResetArmies() {
+    public virtual void ResetArmies() {
         foreach (Army army in armies) {
             army.ResetMovement();
         }

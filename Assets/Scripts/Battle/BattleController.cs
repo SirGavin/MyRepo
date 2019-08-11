@@ -10,6 +10,7 @@ public class BattleController : MonoBehaviour {
     [Serializable]
     public class BoolEvent : UnityEvent<bool> { }
 
+    public bool debugLogs = false;
     public GameObject armyPanePrefab;
     public VerticalLayoutGroup layoutGroup;
 
@@ -44,6 +45,11 @@ public class BattleController : MonoBehaviour {
 
     public void StartBattle(Player attackingPlayer, Army attacker, Player defendingPlayer, Army defender, UnityAction<Boolean> resolveBattle) {
         gameObject.SetActive(true);
+        attackerStrat = null;
+        defenderStrat = null;
+
+        //For some reason, at least during AI vs AI fights, listeneres sometimes get left attached, make sure they are removed
+        this.resolveBattle.RemoveAllListeners();
         this.resolveBattle.AddListener(resolveBattle);
 
         this.attacker = attacker;
@@ -88,31 +94,37 @@ public class BattleController : MonoBehaviour {
                 attackerDamage += GetDamage(matchUp.attackerDmgModifier, attackerArmySize);
                 defenderDamage += GetDamage(matchUp.defenderDmgModifier, defenderArmySize);
 
-                Debug.Log("attackerDamage1: " + attackerDamage);
-                Debug.Log("defenderDamage1: " + defenderDamage);
+                if (debugLogs) Debug.Log("attackerDamage1: " + attackerDamage);
+                if (debugLogs) Debug.Log("defenderDamage1: " + defenderDamage);
 
                 attackerArmySize -= GetDead(ref defenderDamage);
                 defenderArmySize -= GetDead(ref attackerDamage);
 
-                Debug.Log("attackerDamage2: " + attackerDamage);
-                Debug.Log("defenderDamage2: " + defenderDamage);
+                if (debugLogs) Debug.Log("attackerDamage2: " + attackerDamage);
+                if (debugLogs) Debug.Log("defenderDamage2: " + defenderDamage);
+
+                if (attackerArmySize <= 0 || defenderArmySize <= 0) break;
             }
 
             // % of enemy army killed
             float attackerPerformance = 1 - defenderArmySize / defender.armySize;
             float defenderPerformance = 1 - attackerArmySize / attacker.armySize;
-            Debug.Log("attackerPerformance: " + attackerPerformance);
-            Debug.Log("defenderPerformance: " + defenderPerformance);
+            if (debugLogs) Debug.Log("attackerPerformance: " + attackerPerformance);
+            if (debugLogs) Debug.Log("defenderPerformance: " + defenderPerformance);
 
             attacker.SetArmySize((int)Mathf.Ceil(attackerArmySize));
             defender.SetArmySize((int)Mathf.Ceil(defenderArmySize));
 
             gameObject.SetActive(false);
-            Debug.Log("attackerPerformance > defenderPerformance: " + (attackerPerformance > defenderPerformance));
-
+            if (debugLogs) Debug.Log("attackerPerformance > defenderPerformance: " + (attackerPerformance > defenderPerformance));
+            
             resolveBattle.Invoke(attackerPerformance > defenderPerformance);
             resolveBattle.RemoveAllListeners();
         }
+    }
+
+    private float GetDamage(float damageModifier, float armySize) {
+        return UnityEngine.Random.Range(baseDamage - damageRange, baseDamage + damageRange) * damageModifier * armySize;
     }
 
     private void GenerateStrategiesUI(Army army, UnityAction<Strategy> setStrat) {
@@ -128,17 +140,12 @@ public class BattleController : MonoBehaviour {
         stratToSet = strat;
     }
 
-    private float GetDamage(float damageModifier, float armySize)
-    {
-        return UnityEngine.Random.Range(baseDamage - damageRange, baseDamage + damageRange) * damageModifier * armySize;
-    }
-
     private int GetDead(ref float damage)
     {
         int dead = (int)(damage / baseHealth);
-        Debug.Log("dead: " + dead);
+        if (debugLogs) Debug.Log("dead: " + dead);
         damage = damage % baseHealth;
-        Debug.Log("damage: " + damage);
+        if (debugLogs) Debug.Log("damage: " + damage);
         return dead;
     }
 }

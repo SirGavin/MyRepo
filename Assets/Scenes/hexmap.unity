@@ -947,6 +947,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844f257a0ddcc414b8f50ba5df4b6774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugLogs: 0
   armyPanePrefab: {fileID: 1493465375548068, guid: cd0c982dc88be2c478d2be6c40da77bb,
     type: 2}
   layoutGroup: {fileID: 510990499}

@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +10,7 @@ public class AIReinforcePhaseController : PhaseController {
     public Text reinforceCounter;
 
     private int reinforcementCount;
+    private List<WorldTile> borderTiles;
 
     override public void StartPhase(Player player) {
         gameObject.SetActive(true);
@@ -16,14 +20,32 @@ public class AIReinforcePhaseController : PhaseController {
 
         reinforceCounter.color = player.color;
         UpdateReinforceText();
+
+        //float start = Time.realtimeSinceStartup;
+        FindBorderTiles();
+        //UnityEngine.Debug.Log("find boarder time: " + (Time.realtimeSinceStartup - start));
+
         StartCoroutine(Reinforce());
+    }
+
+    private void FindBorderTiles() {
+        borderTiles = new List<WorldTile>();
+        foreach (WorldTile ownedTile in player.GetTiles()) {
+            foreach (WorldTile neighbor in mapController.GetNeighbors(ownedTile)) {
+                if (!player.ControlsTile(neighbor)) {
+                    borderTiles.Add(ownedTile);
+                    break;
+                }
+            }
+        }
     }
 
     private IEnumerator Reinforce() {
         while (reinforcementCount > 0) {
-            WorldTile tile = ((AIPlayer)player).GetRandomOwnedTile();
+            int ranIndex = UnityEngine.Random.Range(0, borderTiles.Count);
+            WorldTile tile = borderTiles[ranIndex]; //((AIPlayer)player).GetRandomBorderTile();
             PlaceReinforcements(tile, 1);
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
         }
 
         EndPhase();
@@ -42,6 +64,6 @@ public class AIReinforcePhaseController : PhaseController {
     }
 
     private void UpdateReinforceText() {
-        reinforceCounter.text = reinforcementCount.ToString(); ;
+        reinforceCounter.text = reinforcementCount.ToString();
     }
 }

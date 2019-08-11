@@ -169,7 +169,7 @@ public class MapController : MonoBehaviour {
         foreach (Vector2Int direction in neighborDirections) {
             WorldTile currentTile;
             if (tiles.TryGetValue(new Vector3Int(tile.LocalPlace.x + direction.x, tile.LocalPlace.y + direction.y, tile.LocalPlace.z), out currentTile)) {
-                neighbors.Add(currentTile);
+                if (currentTile.IsPassable()) neighbors.Add(currentTile);
             }
         }
 
@@ -187,10 +187,33 @@ public class MapController : MonoBehaviour {
     }
 
     //Used for AI turns
-    public void SetHovoredTile(WorldTile tile) {
-        hovoredTile = tile;
+    public bool TryMove(WorldTile moveFrom, WorldTile moveTo) {
+        if (CanMove(moveFrom, moveTo) && moveTo.army == null) {
+            moveTo.army = moveFrom.army;
+            moveFrom.army = null;
+            return true;
+        }
+
+        return false;
     }
-    public void SetSelectedTile(WorldTile tile) {
-        selectedTile = tile;
+
+    private bool CanMove(WorldTile moveFrom, WorldTile moveTo) {
+        return moveFrom != null && moveFrom.army != null && moveFrom.army.CanMove() && moveTo.IsPassable() && HexUtils.AreNeighbors(moveFrom.LocalPlace, moveTo.LocalPlace);
+    }
+
+    public void Push(WorldTile pusher, WorldTile pushee) {
+        List<Vector2Int> pushDirections = HexUtils.GetPushDirections(pusher.OffsetCoords, pushee.OffsetCoords);
+
+        foreach (Vector2Int pushDirection in pushDirections) {
+            WorldTile pushTile;
+            if (tiles.TryGetValue(new Vector3Int(pushee.LocalPlace.x + pushDirection.x, pushee.LocalPlace.y + pushDirection.y, pushee.LocalPlace.z), out pushTile)) {
+                if (pushTile.IsPassable() && pushTile.army == null) {
+                    pushTile.army = pushee.army;
+                    pushee.army = pusher.army;
+                    pusher.army = null;
+                    break;
+                }
+            }
+        }
     }
 }

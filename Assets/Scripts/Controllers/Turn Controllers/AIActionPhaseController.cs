@@ -17,19 +17,15 @@ public class AIActionPhaseController : PhaseController {
         mapController.enabled = false;
 
         this.player = player;
-        player.ResetArmies();
         //Put player tiles in a new list so we don't destroy the original
         playerTiles = new List<WorldTile>(this.player.GetTiles());
-        //CheckNextTile();
         StartCoroutine(CheckNextTile());
     }
 
     private IEnumerator CheckNextTile() {
-        yield return new WaitForSeconds(0.2f);
         if (playerTiles.Count > 0) {
             WorldTile playerTile = playerTiles[0];
             playerTiles.RemoveAt(0);
-            mapController.SetSelectedTile(playerTile);
 
             Army army = playerTile.army;
             if (army && army.CanMove()) {
@@ -39,7 +35,7 @@ public class AIActionPhaseController : PhaseController {
                 foreach (WorldTile neighbor in mapController.GetNeighbors(playerTile)) {
                     if (player.ControlsTile(neighbor) && !neighbor.army) {
                         ownedNeighbors.Add(neighbor);
-                    } else if (neighbor.IsPassable() && !player.ControlsTile(neighbor)) {
+                    } else if (!player.ControlsTile(neighbor)) {
                         enemyNeighbors.Add(neighbor);
                     }
                 }
@@ -50,27 +46,33 @@ public class AIActionPhaseController : PhaseController {
                 } else if (ownedNeighbors.Count > 0) {
                     tileToMoveTo = ownedNeighbors[Random.Range(0, ownedNeighbors.Count)];
                 }
-                if (tileToMoveTo != null) {
-                    mapController.SetHovoredTile(tileToMoveTo);
-                    if (!mapController.TryMove()) {
-                        battleController.StartBattle(player, army, gameController.GetArmiesPlayer(tileToMoveTo.army), tileToMoveTo.army, ResolveBattle);
-                        yield break;
-                    }
-                }
-            }
 
-            StartCoroutine(CheckNextTile());
+                if (tileToMoveTo != null && !mapController.TryMove(playerTile, tileToMoveTo)) {
+                    battleController.StartBattle(player, army, gameController.GetArmiesPlayer(tileToMoveTo.army), tileToMoveTo.army,
+                        (bool attackerWon) => ResolveBattle(playerTile, tileToMoveTo, attackerWon));
+                    yield return new WaitForSeconds(0.2f);
+                    yield break;
+                } else {
+                    yield return new WaitForSeconds(0.2f);
+                    StartCoroutine(CheckNextTile());
+                    yield break;
+                }
+            } else {
+                yield return new WaitForSeconds(0.2f);
+                StartCoroutine(CheckNextTile());
+                yield break;
+            }
         } else {
             mapController.enabled = true;
             EndPhase();
         }
     }
 
-    private void ResolveBattle(bool attackerWon) {
+    private void ResolveBattle(WorldTile pusher, WorldTile pushee, bool attackerWon) {
         if (attackerWon) {
-            mapController.Push();
+            mapController.Push(pusher, pushee);
         }
-
+        
         StartCoroutine(CheckNextTile());
     }
 }
