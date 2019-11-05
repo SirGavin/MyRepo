@@ -14,6 +14,9 @@ public class BattleController : MonoBehaviour {
     public GameObject armyPanePrefab;
     public VerticalLayoutGroup layoutGroup;
 
+    public GameObject preFightPane;
+    public GameObject fightingPane;
+
     public float baseDamage = 0.7f;
     public float damageRange = 0.15f;
     public float baseHealth = 10f;
@@ -45,6 +48,8 @@ public class BattleController : MonoBehaviour {
 
     public void StartBattle(Player attackingPlayer, Army attacker, Player defendingPlayer, Army defender, UnityAction<Boolean> resolveBattle) {
         gameObject.SetActive(true);
+        preFightPane.SetActive(true);
+        //fightingPane.SetActive(false);
         attackerStrat = null;
         defenderStrat = null;
 
@@ -83,6 +88,9 @@ public class BattleController : MonoBehaviour {
 
     public void Fight() {
         if (attackerStrat != null && defenderStrat != null) {
+            //preFightPane.SetActive(false);
+            //fightingPane.SetActive(true);
+
             float attackerArmySize = attacker.armySize;
             float defenderArmySize = defender.armySize;
             float attackerDamage = 0f;
@@ -115,7 +123,7 @@ public class BattleController : MonoBehaviour {
             attacker.SetArmySize((int)Mathf.Ceil(attackerArmySize));
             defender.SetArmySize((int)Mathf.Ceil(defenderArmySize));
 
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
             if (debugLogs) Debug.Log("attackerPerformance > defenderPerformance: " + (attackerPerformance > defenderPerformance));
             
             resolveBattle.Invoke(attackerPerformance > defenderPerformance);
@@ -129,9 +137,8 @@ public class BattleController : MonoBehaviour {
 
     private void GenerateStrategiesUI(Army army, UnityAction<Strategy> setStrat) {
         GameObject armyObj = Instantiate(armyPanePrefab);
-        armyObj.transform.SetParent(layoutGroup.transform);
+       // armyObj.transform.SetParent(layoutGroup.transform);
         armyObj.transform.SetAsFirstSibling();
-
         StrategyPanel stratPane = armyObj.GetComponentInChildren<StrategyPanel>();
         stratPane.GenerateUI(army, setStrat);
     }

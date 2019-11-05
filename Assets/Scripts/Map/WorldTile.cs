@@ -37,6 +37,16 @@ public class WorldTile {
             if (_army) _army.MoveToTile(this);
         }
     }
+
+    private Color origColor;
+    public void ColorBlack() {
+        origColor = TerrainTilemap.GetColor(LocalPlace);
+        TerrainTilemap.SetColor(LocalPlace, Color.black);
+    }
+
+    public void ResetColor() {
+        TerrainTilemap.SetColor(LocalPlace, origColor);
+    }
     
     private TileEvent tileCaptured = new TileEvent();
     public void Capture(Tile newBorder, UnityAction<WorldTile> capturedCallback) {

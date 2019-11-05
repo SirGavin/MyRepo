@@ -42,6 +42,8 @@ public struct FractionalHex {
     }
 }
 
+//hex grid info/formulas https://www.redblobgames.com/grids/hexagons/
+//MapController stores tiles using odd-r offset coords (in LocalPlace variable)
 public static class HexUtils {
 
     public static Vector2 hexToOffset(Hex hex) {
@@ -50,13 +52,6 @@ public static class HexUtils {
         int row = hex.r;
         return new Vector2(col, row);
     }
-
-    //function evenq_to_cube(hex):
-    //    var x = hex.col
-    //    var z = hex.row - (hex.col + (hex.col & 1)) / 2
-    //    var y = -x - z
-    //    return Cube(x, y, z)
-
 
     public static Vector2 PositionToOffsetCoords(Vector3 position) {
         float q = (((float)Math.Sqrt(3f) / 3f * position.x) - (1f / 3f * position.y)) / 0.55f; //Default hex width is 1 unit
@@ -93,6 +88,23 @@ public static class HexUtils {
         }
 
         return new Hex(rq, rr, rs);
+    }
+
+    private static Vector3Int OddRToCude(Vector3Int oddR) {
+        int x = oddR.x - (oddR.y - (oddR.y & 1)) / 2;
+        int z = oddR.y;
+        int y = -x - z;
+        return new Vector3Int(x, y, z);
+    }
+
+    private static int GetCubeDistance(Vector3Int tile1, Vector3Int tile2) {
+        return (Math.Abs(tile1.x - tile2.x) + Math.Abs(tile1.y - tile2.y) + Math.Abs(tile1.z - tile2.z)) / 2;
+    }
+
+    public static int GetDistance(Vector3Int tile1, Vector3Int tile2) {
+        Vector3Int tile1Cube = OddRToCude(tile1);
+        Vector3Int tile2Cube = OddRToCude(tile2);
+        return GetCubeDistance(tile1Cube, tile2Cube);
     }
 
     private static List<Vector2Int> NeighborDirections = new List<Vector2Int> {

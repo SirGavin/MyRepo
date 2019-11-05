@@ -120,26 +120,37 @@ public class MapController : MonoBehaviour {
     }
 
     //This makes the selected army "push" the losing army post-battle
-    //TODO: can push onto an empty enemy tile
+    //TODO: can push onto an empty enemy tile (is this even an issue?)
+    //TODO: can push an empty/null army onto a tile
+    //TODO: if no valid tile to push to, attacker doesn't take tile
     public void Push() {
         List<Vector2Int> pushDirections = HexUtils.GetPushDirections(selectedTile.OffsetCoords, hovoredTile.OffsetCoords);
 
-        foreach (Vector2Int pushDirection in pushDirections) {
-            WorldTile pushTile;
-            if (tiles.TryGetValue(new Vector3Int(hovoredTile.LocalPlace.x + pushDirection.x, hovoredTile.LocalPlace.y + pushDirection.y, hovoredTile.LocalPlace.z), out pushTile)) {
-                if (pushTile.IsPassable() && pushTile.army == null) {
-                    pushTile.army = hovoredTile.army;
-                    hovoredTile.army = selectedTile.army;
-
-                    selectedTile.army = null;
-                    selectedTile.Deselect();
-                    selectedTile = hovoredTile;
-                    selectedTile.Select(selectTile);
-                        
-                    break;
+        bool pushed = false;
+        if (hovoredTile.army.armySize > 0) {
+            foreach (Vector2Int pushDirection in pushDirections) {
+                WorldTile pushTile;
+                if (tiles.TryGetValue(new Vector3Int(hovoredTile.LocalPlace.x + pushDirection.x, hovoredTile.LocalPlace.y + pushDirection.y, hovoredTile.LocalPlace.z), out pushTile)) {
+                    if (pushTile.IsPassable() && pushTile.army == null) {
+                        pushTile.army = hovoredTile.army;
+                        hovoredTile.army = selectedTile.army;
+                        pushed = true;
+                        break;
+                    }
                 }
             }
         }
+
+        if (!pushed) {
+            //no valid tiles to push to, destroy defending army and move attacker
+            hovoredTile.army.SetArmySize(0);
+            hovoredTile.army = selectedTile.army;
+        }
+
+        selectedTile.army = null;
+        selectedTile.Deselect();
+        selectedTile = hovoredTile;
+        selectedTile.Select(selectTile);
     }
 
     public void PlaceArmy(Army army) {
@@ -181,6 +192,9 @@ public class MapController : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0)) {
             TrySelect();
+
+            int distance = HexUtils.GetDistance(currentPlayer.GetTiles()[0].LocalPlace, hovoredTile.LocalPlace);
+            Debug.Log("Distance: " + distance);
         } else {
             TryHover(point);
         }
@@ -201,19 +215,33 @@ public class MapController : MonoBehaviour {
         return moveFrom != null && moveFrom.army != null && moveFrom.army.CanMove() && moveTo.IsPassable() && HexUtils.AreNeighbors(moveFrom.LocalPlace, moveTo.LocalPlace);
     }
 
+    //TODO: can push onto an empty enemy tile (is this even an issue?)
+    //TODO: can push an empty/null army onto a tile
+    //TODO: if no valid tile to push to, attacker doesn't take tile
     public void Push(WorldTile pusher, WorldTile pushee) {
         List<Vector2Int> pushDirections = HexUtils.GetPushDirections(pusher.OffsetCoords, pushee.OffsetCoords);
 
-        foreach (Vector2Int pushDirection in pushDirections) {
-            WorldTile pushTile;
-            if (tiles.TryGetValue(new Vector3Int(pushee.LocalPlace.x + pushDirection.x, pushee.LocalPlace.y + pushDirection.y, pushee.LocalPlace.z), out pushTile)) {
-                if (pushTile.IsPassable() && pushTile.army == null) {
-                    pushTile.army = pushee.army;
-                    pushee.army = pusher.army;
-                    pusher.army = null;
-                    break;
+        bool pushed = false;
+        if (pushee.army.armySize > 0) {
+            foreach (Vector2Int pushDirection in pushDirections) {
+                WorldTile pushTile;
+                if (tiles.TryGetValue(new Vector3Int(pushee.LocalPlace.x + pushDirection.x, pushee.LocalPlace.y + pushDirection.y, pushee.LocalPlace.z), out pushTile)) {
+                    if (pushTile.IsPassable() && pushTile.army == null) {
+                        pushTile.army = pushee.army;
+                        pushee.army = pusher.army;
+                        pusher.army = null;
+                        pushed = true;
+                        break;
+                    }
                 }
             }
+        }
+
+        if (!pushed) {
+            //no valid tiles to push to, destroy defending army and move attacker
+            pushee.army.SetArmySize(0);
+            pushee.army = pusher.army;
+            pusher.army = null;
         }
     }
 }

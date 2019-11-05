@@ -28,6 +28,7 @@ public class AIReinforcePhaseController : PhaseController {
         StartCoroutine(Reinforce());
     }
 
+    //TODO: extrapolate this into a common location
     private void FindBorderTiles() {
         borderTiles = new List<WorldTile>();
         foreach (WorldTile ownedTile in player.GetTiles()) {
